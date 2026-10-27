@@ -2,7 +2,7 @@
 
 > **Every agent session starts here.** Read this file fully, then follow §4 Session Protocol. This file never duplicates details it can point to; it is the single tracker for project state. Agents MUST maintain §3 and the task checklists — stale docs are treated as build failures.
 
-Maintained by: agent sessions · Last updated: 2026-10-27 (P0 gate PASSED — owner-confirmed; focus P1)
+Maintained by: agent sessions · Last updated: 2026-10-27 (P0 gate PASSED, owner-confirmed; remote pushed, CI green at `4050ab9`; focus P1)
 
 ---
 
