@@ -18,3 +18,14 @@ Round-1 blocker 1: a file-op-shaped backend (contents-API PUTs) produces N commi
 - `main`-hardcoding anywhere is a review-blocking defect.
 ### P0 verification (2026-10-27)
 - Contract as code now: `GitBackend` (branch is a parameter on every method; `baseHeadSha` CAS; exhaustive boolean `capabilities` incl. `commitStatus`), the truncation assert `assertNotTruncated` + `Result` type (INV-N02 setup), and the shared contract-suite runner the fixture exemplar passes. Transport lands P1 (reads) / P2 (writes). No deviation.
+
+### P1 addendum (2026-10-27) — read surface amendment
+The P0 interface was a write-shaped skeleton; reads need their own surface. Supersedes the P0 method shape (not the laws):
+- `TreeEntry` gains `path` (tree entries are useless without it); tuple equality remains `{sha, mode, type}` and path is the map key in diffs.
+- Read methods (branch parameter on EVERY method, INV-P14):
+  - `readTree(branch, commitSha, options?: { etag?: string }) → { kind: 'tree', tree, etag } | { kind: 'not-modified', etag? }`
+  - `readFile(branch, path, blobSha, options?: { etag?: string }) → { kind: 'file', file, etag } | { kind: 'not-modified', etag? }`; the implementation uses the contents route for small files and `/git/blobs` for >1MB (including the contents-route fallback), never `raw.githubusercontent.com`.
+  - `listChangedFiles(branch, baseSha, headSha) → Map<path, TreeEntryTuple>` — branch is now explicit (P0 omitted it; review defect fixed).
+- ETag/conditional cache logic lives in the admin queryFns; the backend only sends `If-None-Match` and reports `not-modified`. No second cache in the transport.
+- Recursive tree reads assert `!truncated`; on truncation the backend walks subtrees non-recursively and fails loudly if a subtree is still truncated (INV-N02).
+- Read errors are a small typed set for P1 (`AUTH_EXPIRED`, `SCOPE`, `NOT_FOUND`, `RATE_LIMIT`, `NETWORK`, `UNKNOWN`); the full classified union + write cases lands P2.2.

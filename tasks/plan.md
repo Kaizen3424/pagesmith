@@ -53,23 +53,78 @@ A git-backed zero-database CMS (headless core + brandable React admin) built in 
 **Checkpoint: Foundation** — clean-clone install → typecheck → lint → test → build → e2e green end-to-end; owner review.
 
 ## Phase 1 — Config + read path (see `P1-config-read.md`)
-```
-P1.1  DSL factories + closed config schema        (M, seq)
-P1.2  Field registry + lenient parse + defaults   (M, after 1)
-P1.3  Canonical serializer + goldens fixture-run  (M, after 2)
-P1.4  GitBackend read ops + listChangedFiles      (M, seq w/ 1)
-P1.5  Snapshot store + ETag cache                 (M, after 4)
-P1.6  parseUntrustedJson + caps                   (S, seq w/ 2)
-P1.7  Contract suite read-side                    (M, after 4–5)
-P1.8  Auth provider + PAT + capability probe      (M, after 5)
-P1.9  Admin shell + tokens + login screen         (M, after 8)
-P1.10 Library screen driven by config             (M, after 2, 5, 9)
-P1.11 ServicesProvider + entryIndex               (M, after 5, 10)
-P1.12 yve fixture mirror + drift fixtures         (M, after 3)
-P1.13 Collator + money + slug-read                (S, after 2)
-P1.14 FakeGithub read handlers + chaos modes      (M, after 4)
-```
-**Checkpoint: P1** — e2e browse journey + INV-S01–S06 + P14 + read-side suite green.
+
+### P1.1 — Zod-first DSL + closed config document (M, seq)
+- Acceptance: `fields.*` factories return zod schemas carrying CMS metadata; `defineCollection({schema: z.object(...)})` walks the shape; `toAdminConfig()` emits JSON-safe descriptors and `parseAdminConfig()` rejects unknown types/keys/duplicates naming collection+field; `schemaVersion` required.
+- Verify: `pnpm --filter @mycms/core test -- src/config` + DSL tests.
+- Files: `packages/core/src/fields/*`, `packages/core/src/config/*`.
+
+### P1.2 — Field registry + lenient parse + strict validator (M, after 1)
+- Acceptance: 12 value types registered with `{value, raw, config}` typing; parse returns `{value, issues, untouched}`; no default is ever injected; strict-save validator refuses unclean entries (including the 5 invalid drift cases); relation context validator async.
+- Verify: `inv-lenient-strict.test.ts`, `inv-default-immune.test.ts`, per-type tests.
+- Files: `packages/core/src/fields/parse.ts`, `validate.ts`, `__tests__/`.
+
+### P1.3 — Source-preserving serializer + canonical printer (M, after 2 + fixture mirror)
+- Acceptance: `serializeDocument(parseDocument(raw)) === raw` for every mirrored fixture; canonical printer emits 2-space/LF/trailing newline/author key order for new/edited docs; CRLF canon-equal; no-op tree diff empty.
+- Verify: `inv-noop-diff.test.ts`, `golden-byte-identity.test.ts` vs fixture manifest.
+- Files: `packages/core/src/serialization/*`, fixture tests.
+
+### P1.4 — GitBackend read ops + branch law (M, seq w/ 1)
+- Acceptance: `readTree`/`readFile`/`listChangedFiles` on `GithubBackend`; `TreeEntry.path`; recursive reads assert `!truncated` with subtree fallback; ETag conditional result; branch parameter on every method; no `main` literals; contents→blob fallback >1MB.
+- Verify: `inv-branch-param.test.ts`, `inv-truncation.test.ts`, transport tests vs MSW.
+- Files: `packages/core/src/backend/*`.
+
+### P1.5 — Snapshot store + ETag cache in queryFns (M, after 4)
+- Acceptance: monotonic advance; tree/blob keyed by immutable sha; conditional GET returns `not-modified`; admin query keys carry `refSha`; no second UI cache.
+- Verify: `inv-fresh-binding` foundation test (stale snapshot never overwrites verified head); cache unit tests.
+- Files: `packages/core/src/cache/*`, `packages/admin/src/admin/queries.ts`.
+
+### P1.6 — parseUntrustedJson + caps (S, seq w/ 2)
+- Acceptance: prototype keys stripped at every depth; 2MB/depth-64/5k caps; Result-shaped failures; repo-wide sink/merge grep gate.
+- Verify: `inv-prototype-pollution.test.ts`, `inv-parse-caps.test.ts`.
+- Files: `packages/core/src/safety/untrusted-json.ts`.
+
+### P1.7 — Read-side contract suite (M, after 4–5)
+- Acceptance: same suite passes FakeGithub AND `reference-fixture-backend`; covers refs, tree paths, diff add/modify/delete, truncation fallback, blob reads, typed 404.
+- Verify: `pnpm --filter @mycms/core test -- src/backend`.
+- Files: `packages/core/src/backend/contract-suite/*`, `backends/reference-fixture-backend/*`.
+
+### P1.8 — AuthProvider/PatProvider + capability probe (M, after 5)
+- Acceptance: PAT lifecycle per ADR-0002 (remember on device / session fallback / wipe on sign-out); probe reads rate_limit/repo/protection-admin/check-runs; Checks-read missing is advisory; token never in URL; probe never persisted.
+- Verify: `inv-probe.test.ts`, token hygiene tests.
+- Files: `packages/core/src/auth/*`, `packages/core/src/web/*`, `packages/core/src/backend/github/*`.
+
+### P1.9 — Admin shell + login (M, after 8)
+- Acceptance: login PAT card + remember checkbox + guided probe errors; shell routes/tokens; copy through `t()` with founder vocabulary.
+- Verify: admin unit tests + e2e login journey.
+- Files: `packages/admin/src/screens/login-screen.tsx`, `admin/mount.tsx`, `admin/routes.tsx`, `copy/*`.
+
+### P1.10 — Library screen (M, after 2, 5, 9)
+- Acceptance: config-driven groups/search/sort/view groups; mustache-lite summaries (text nodes only); thumbnails via media resolver; preview links via `safeUrl` + `target=_blank rel=noopener noreferrer`; drift chip.
+- Verify: library unit tests + e2e browse.
+- Files: `packages/admin/src/screens/library-screen.tsx`, components.
+
+### P1.11 — ServicesProvider + entryIndex + entry view (M, after 5, 10)
+- Acceptance: `entryIndex` sync from Query cache with async fallback; relation display resolves target title; read-only entry view renders all field kinds incl. hidden drawer and drift banner.
+- Verify: services tests + e2e open 3 entries.
+- Files: `packages/admin/src/admin/services-provider.tsx`, `screens/entry-screen.tsx`.
+
+### P1.12 — yve fixture mirror + drift fixtures (M, after 3; mirror built early)
+- Acceptance: 14 content files + 24 images copied verbatim from `yve_gallery_decap@e922bbb`; manifest pins SHA-256 + git blob/tree/head shas; yve config ported to DSL; 6 drift fixtures loaded in test collection; library shows all clean entries + drift banners.
+- Verify: sync script check mode + fixture tests + e2e.
+- Files: `scripts/sync-yve-fixtures.mjs`, `playground/fixtures/**`, `playground/src/config/*`.
+
+### P1.13 — Collator + money + slug-read (S, after 2)
+- Acceptance: shared comparator matches nl-NL `localeCompare`; money `€ 1.475` via Intl; slug derived from filename, never stored.
+- Verify: `collator.test.ts`, `money.test.ts`, `slug.test.ts`.
+- Files: `packages/core/src/safety/collator.ts`, `money.ts`, `slug.ts`.
+
+### P1.14 — FakeGithub reads + chaos (M, after 4)
+- Acceptance: MSW handlers for repo/ref/tree/blob/check-runs/protection/rate_limit; ETag 304; truncation/404/429 chaos; browser fixture loader; contract suite green.
+- Verify: `pnpm --filter playground test` + e2e.
+- Files: `playground/src/fake-github/*`, `playground/public/mockServiceWorker.js`.
+
+**Checkpoint: P1** — e2e browse journey + INV-S01–S06 + P14 + A03(partial) + T01–T03 + read-side suite green.
 
 ## Phase 2 — Save pipeline (see `P2-save-pipeline.md`)
 ```

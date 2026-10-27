@@ -19,6 +19,10 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "dependencies": {
+    "idb-keyval": "catalog:",
+    "zod": "catalog:"
+  },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:",
     "tsup": "catalog:",

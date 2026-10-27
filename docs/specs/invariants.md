@@ -22,7 +22,7 @@ Save pipeline & concurrency:
 Serialization & parse:
 
 - [ ] INV-S01 · L0 · Untouched-file byte identity: `serialize(parse(raw)) === raw` on all yve fixtures — `core/src/cache/__tests__/golden-byte-identity.test.ts`
-- [ ] INV-S02 · L0 · No-op saves emit zero-diff commits (tree-sha equality); CRLF/ETag variants don't false-change — `inv-noop-diff.test.ts`
+- [ ] INV-S02 · L0/L1 · No-op saves emit zero-diff commits (tree-sha equality); CRLF/ETag variants don't false-change — `inv-noop-diff.test.ts` (**P1 scope:** serializer byte identity, CRLF canon, `listChangedFiles(base,base)=∅`; **P2 C.1 scope:** zero-diff commit assertion — owner-approved split 2026-10-27)
 - [ ] INV-S03 · L0 · Lenient-read/strict-save: all 6 yve drift fixtures render w/ banner; save refuses unclean; untouched patch preserves unmodeled keys verbatim — `inv-lenient-strict.test.ts`
 - [ ] INV-S04 · L0 · Default-immunity: parse never injects hidden defaults (no key creation); defaults only via new-entry/template leaf-fold — `inv-default-immune.test.ts`
 - [ ] INV-S05 · L0 · Prototype pollution: `{"__proto__":…}` + nested `constructor.prototype` fixtures; `parseUntrustedJson` only; repo-wide ban on unsafe merges (grep-gated) — `inv-prototype-pollution.test.ts`

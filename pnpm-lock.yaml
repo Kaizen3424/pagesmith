@@ -66,6 +66,9 @@ catalogs:
     '@vitest/coverage-v8':
       specifier: 5.0.5
       version: 5.0.5
+    idb-keyval:
+      specifier: 6.3.0
+      version: 6.3.0
     msw:
       specifier: 3.0.3
       version: 3.0.3
@@ -96,6 +99,9 @@ catalogs:
     yaml:
       specifier: 2.9.1
       version: 2.9.1
+    zod:
+      specifier: 4.6.7
+      version: 4.6.7
 
 importers:
 
@@ -200,6 +206,13 @@ importers:
         version: 5.0.5(@types/node@22.20.5)(@vitest/coverage-v8@5.0.5)(msw@3.0.3(@types/node@22.20.5)(typescript@7.0.2)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1)))(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
   packages/core:
+    dependencies:
+      idb-keyval:
+        specifier: 'catalog:'
+        version: 6.3.0
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.7
     devDependencies:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
@@ -1756,6 +1769,9 @@ packages:
     resolution: {integrity: sha512-Z+8unD6em/MJwyrkWQ2M3wygRGI1+MztbutiNwk1DCuEPXOZRWGjtcMPZYP1exY9iNZMhd7ZOSMQSo9WYtiQRw==}
     hasBin: true
 
+  idb-keyval@6.3.0:
+    resolution: {integrity: sha512-um+2dgAWmYsu615EXpWVwSmapJhON0G43t3Ka/EVaohzPQXSMqKEqeDK/oIW3Ow+BXaF2PvSc+oBTFp793A5Ow==}
+
   import-meta-resolve@4.2.0:
     resolution: {integrity: sha512-Iqv2fzaTQN28s/FwZAoFq0ZSs/7hMAHJVX+w8PZl3cY19Pxk6jFFalxQoIfW2826i/fDLXv8IiEZRIT0lDuWcg==}
 
@@ -2403,6 +2419,9 @@ packages:
   yargs@18.2.0:
     resolution: {integrity: sha512-9OpKOLeaoNFecEp7P6iYbzze/5CqWoH7N3SMs/6y1XF4nMvFMspEGZzJ6uFi9MmQwXhyzqYoSEKO3tvA3Z/o2w==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=23}
+
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
 
@@ -3649,6 +3668,8 @@ snapshots:
 
   human-id@4.2.2: {}
 
+  idb-keyval@6.3.0: {}
+
   import-meta-resolve@4.2.0: {}
 
   is-node-process@1.2.0: {}
@@ -4194,3 +4215,5 @@ snapshots:
       string-width: 8.3.0
       y18n: 5.0.8
       yargs-parser: 22.0.0
+
+  zod@4.6.7: {}
