@@ -3,11 +3,16 @@
  * CI workflow guard — ADR-0010 §2.6 least-privilege CI law, enforced FROM P0 on
  * our own workflows: every `uses:` pinned to a full commit SHA, banned trigger
  * keys (pull_request_target), and `permissions: contents: read` at the top
- * level AND for every job. Parses YAML structure; comments never count.
+ * level AND for every job.
+ *
+ * Runs BEFORE `pnpm install` in CI (fail-before-work ordering), so it MUST stay
+ * dependency-free: the wf files are parsed by scripts/yaml-subset.mjs, a
+ * fail-closed strict-subset parser that turns RED on any YAML outside the
+ * guarded subset — the law is never silently mis-parsed.
  */
 import { readdirSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
-import { parse } from "yaml"
+import { parseSubsetYaml } from "./yaml-subset.mjs"
 
 const WORKFLOWS_DIR = join(process.cwd(), ".github", "workflows")
 const SHA_RE = /^[0-9a-f]{40}$/
@@ -30,55 +35,83 @@ function listWorkflows(dir) {
   return out
 }
 
+/**
+ * Collect `uses` leaf values from any node.
+ * @param {ReturnType<typeof parseSubsetYaml> | null} node
+ * @param {string[]} out
+ */
+function collectUses(node, out) {
+  if (node == null) return
+  if (node.kind === "map") {
+    for (const [key, value] of node.entries) {
+      if (key === "uses" && value.kind === "scalar") out.push(value.text)
+      collectUses(value, out)
+    }
+  } else if (node.kind === "list") {
+    for (const item of node.items) collectUses(item, out)
+  }
+}
+
 for (const path of listWorkflows(WORKFLOWS_DIR)) {
   const text = readFileSync(path, "utf8")
   const rel = path.replace(/\\/g, "/").split("/").slice(-2).join("/")
 
-  /** @type {Record<string, unknown> | null} */
-  let doc = null
+  /** @type {ReturnType<typeof parseSubsetYaml> | null} */
+  let root = null
   try {
-    doc = /** @type {Record<string, unknown>} */ (parse(text))
-  } catch {
-    issue(`${rel}: YAML parse failure`)
+    root = parseSubsetYaml(rel, text)
+  } catch (error) {
+    issue(
+      `${rel}: YAML outside the guarded subset — ${error instanceof Error ? error.message : String(error)}`,
+    )
+    continue
   }
-  if (doc == null) continue
+  if (root.kind !== "map") continue // unreachable: the subset parser only builds maps at root
 
-  const triggers = /** @type {Record<string, unknown> | undefined} */ (doc.on)
-  if (triggers != null && typeof triggers === "object") {
-    for (const triggerName of Object.keys(triggers)) {
+  const triggers = root.entries.get("on")
+  if (triggers != null && triggers.kind === "map") {
+    for (const triggerName of triggers.entries.keys()) {
       if (BANNED_TRIGGERS.has(triggerName)) {
         issue(`${rel}: trigger ${JSON.stringify(triggerName)} is banned (ADR-0010 §2.6)`)
       }
     }
   }
 
-  const perms = /** @type {Record<string, unknown> | undefined} */ (doc.permissions)
-  if (perms == null || perms.contents !== "read") {
+  const topPerms = root.entries.get("permissions")
+  const topContents =
+    topPerms != null && topPerms.kind === "map" ? topPerms.entries.get("contents") : null
+  if (topContents == null || topContents.kind !== "scalar" || topContents.text !== "read") {
     issue(`${rel}: top-level permissions must declare 'contents: read'`)
   }
 
-  const jobs = /** @type {Record<string, unknown>} */ (doc.jobs ?? {})
-  for (const [jobName, rawJob] of Object.entries(jobs)) {
-    if (typeof rawJob !== "object" || rawJob == null) continue
-    const job = /** @type {Record<string, unknown>} */ (rawJob)
-    const jobPerms = /** @type {Record<string, unknown> | undefined} */ (job.permissions)
-    if (jobPerms == null || jobPerms.contents !== "read") {
+  const jobs = root.entries.get("jobs")
+  if (jobs != null && jobs.kind !== "map") {
+    issue(`${rel}: 'jobs' must be a block mapping`)
+  }
+  if (jobs == null || jobs.kind !== "map") continue
+
+  for (const [jobName, rawJob] of jobs.entries) {
+    if (rawJob.kind !== "map") {
+      issue(`${rel}: job ${JSON.stringify(jobName)} must be a mapping`)
+      continue
+    }
+    const jobPerms = rawJob.entries.get("permissions")
+    const jobContents =
+      jobPerms != null && jobPerms.kind === "map" ? jobPerms.entries.get("contents") : null
+    if (jobContents == null || jobContents.kind !== "scalar" || jobContents.text !== "read") {
       issue(
         `${rel}: job ${JSON.stringify(jobName)} must declare 'permissions: contents: read' (job-level least privilege)`,
       )
     }
-    const steps = job.steps
-    if (!Array.isArray(steps)) continue
-    for (const rawStep of steps) {
-      if (typeof rawStep !== "object" || rawStep == null) continue
-      const step = /** @type {Record<string, unknown>} */ (rawStep)
-      const uses = step.uses
-      if (typeof uses !== "string") continue
-      if (uses.startsWith("./")) continue // local reusable workflows: our own code
-      const at = uses.lastIndexOf("@")
-      const ref = at >= 0 ? uses.slice(at + 1).trim() : ""
+    /** @type {string[]} */
+    const uses = []
+    collectUses(rawJob, uses)
+    for (const usesRef of uses) {
+      if (usesRef.startsWith("./")) continue // local reusable workflows: our own code
+      const at = usesRef.lastIndexOf("@")
+      const ref = at >= 0 ? usesRef.slice(at + 1).trim() : ""
       if (!SHA_RE.test(ref)) {
-        issue(`${rel}: step uses ${JSON.stringify(uses)} must pin a 40-hex commit SHA`)
+        issue(`${rel}: step uses ${JSON.stringify(usesRef)} must pin a 40-hex commit SHA`)
       }
     }
   }

@@ -6,10 +6,15 @@
  *
  * ADR-0010 §2.6 supply-chain law: waivers are audited, dated, owned and
  * short-lived. Zero entries = healthy. No remote I/O, no telemetry.
+ *
+ * Runs with ZERO installs (the scheduled audit job never runs pnpm install),
+ * so it is dependency-free: the waiver file parses via scripts/yaml-subset.mjs
+ * (fail-closed — a waiver file outside the guarded subset fails, never
+ * mis-parses).
  */
 import { readFileSync } from "node:fs"
 import { join } from "node:path"
-import { parse } from "yaml"
+import { parseSubsetYaml } from "./yaml-subset.mjs"
 
 const REPO_ROOT = process.cwd()
 const WAIVERS_PATH = join(REPO_ROOT, "security", "audit-waivers.yml")
@@ -45,49 +50,74 @@ function extractAdvisories(auditOutput) {
   return []
 }
 
-/** @returns {{ waivers: Record<string, unknown>[] }} */
+/** @typedef {{ [field: string]: string | null }} WaiverFields */
+
+/** @returns {WaiverFields[]} */
 function loadWaivers() {
+  /** @type {string} */
   let raw
   try {
     raw = readFileSync(WAIVERS_PATH, "utf8")
   } catch {
     fail(`waiver file unreadable: ${WAIVERS_PATH}`)
-    return { waivers: [] }
+    return []
   }
-  /** @type {Record<string, unknown> | null} */
-  const doc = parse(raw) ?? null
-  if (doc == null || typeof doc !== "object" || !Array.isArray(doc.waivers)) {
+  /** @type {ReturnType<typeof parseSubsetYaml> | undefined} */
+  let root
+  try {
+    root = parseSubsetYaml("security/audit-waivers.yml", raw)
+  } catch (error) {
+    fail(
+      `waiver file is outside the guarded YAML subset — ${error instanceof Error ? error.message : String(error)}`,
+    )
+    return []
+  }
+  const waiversNode = root.entries.get("waivers")
+  // Flow `waivers: []` and block dash lists both arrive as kind 'list'.
+  if (waiversNode == null || waiversNode.kind !== "list") {
     fail('waiver file must contain a top-level "waivers" array')
-    return { waivers: [] }
+    return []
   }
+  /** @type {WaiverFields[]} */
+  const waivers = []
   const today = new Date()
-  for (const w of /** @type {Record<string, unknown>[]} */ (doc.waivers)) {
-    const missing = REQUIRED_FIELDS.filter((key) => w[key] == null || w[key] === "")
-    if (missing.length > 0) {
-      fail(`waiver ${w.id ?? "(no id)"} missing fields: ${missing.join(", ")}`)
+  for (const item of waiversNode.items) {
+    if (item.kind !== "map") fail(`waiver file: every waiver entry must be a mapping`)
+    /** @type {WaiverFields} */
+    const fields = {}
+    for (const field of REQUIRED_FIELDS) {
+      const value = item.entries.get(field)
+      fields[field] = value != null && value.kind === "scalar" ? value.text : null
     }
-    const expiry = new Date(/** @type {string} */ (w.expires))
+    const id = fields.id ?? "(no id)"
+    const missing = REQUIRED_FIELDS.filter((key) => fields[key] == null || fields[key] === "")
+    if (missing.length > 0) {
+      fail(`waiver ${id} missing fields: ${missing.join(", ")}`)
+    }
+    const expiry = new Date(/** @type {string} */ (fields.expires))
     if (Number.isNaN(expiry.getTime())) {
-      fail(`waiver ${w.id} has an unreadable expires date: ${String(w.expires)}`)
+      fail(`waiver ${id} has an unreadable expires date: ${String(fields.expires)}`)
     }
     const daysOut = Math.round((expiry.getTime() - today.getTime()) / 86_400_000)
-    if (daysOut < 0) fail(`waiver ${w.id} EXPIRED on ${w.expires} — renew or remove it`)
+    if (daysOut < 0) fail(`waiver ${id} EXPIRED on ${fields.expires} — renew or remove it`)
     if (daysOut > MAX_WINDOW_DAYS) {
-      fail(`waiver ${w.id} exceeds the ${MAX_WINDOW_DAYS}-day window (${w.expires})`)
+      fail(`waiver ${id} exceeds the ${MAX_WINDOW_DAYS}-day window (${fields.expires})`)
     }
+    waivers.push(fields)
   }
-  return { waivers: /** @type {Record<string, unknown>[]} */ (doc.waivers) }
+  return waivers
 }
 
 const auditOutput = JSON.parse(await readStdin())
-const { waivers } = loadWaivers()
+const waivers = loadWaivers()
 const advisories = extractAdvisories(auditOutput)
 
 /**
  * A waiver covers an advisory when the advisory id and package match.
  * @param {Record<string, unknown>} advisory
+ * @param {WaiverFields[]} waivers
  */
-function isWaived(advisory) {
+function isWaived(advisory, waivers) {
   const id = String(advisory.id ?? "")
   const pkg = String(advisory.module_name ?? advisory.name ?? "")
   const vulnerableRange = String(advisory.vulnerable_versions ?? advisory.range ?? "")
@@ -101,7 +131,7 @@ if (advisories.length === 0) {
   process.exit(0)
 }
 
-const open = advisories.filter((advisory) => !isWaived(advisory))
+const open = advisories.filter((advisory) => !isWaived(advisory, waivers))
 if (open.length === 0) {
   console.log("audit-waiver-filter: OK — every advisory is covered by an in-window waiver.")
   process.exit(0)
