@@ -1,0 +1,8 @@
+{
+  "$comment": "DEMO settings doc — placeholder.",
+  "contact": {
+    "email": "demo@studio.example",
+    "phone": "0000000000",
+    "locationLines": ["Somewhere 1"]
+  }
+}
