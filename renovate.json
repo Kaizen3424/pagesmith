@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":pinAllExceptPeerDependencies"],
+  "minimumReleaseAge": "7 days",
+  "labels": ["deps"],
+  "packageRules": [
+    {
+      "description": "Radix/octokit/React/TS majors are reviewed manually (ADR-0010 §2.6)",
+      "matchPackageNames": [
+        "@radix-ui/*",
+        "octokit",
+        "@octokit/*",
+        "react",
+        "react-dom",
+        "typescript",
+        "vite"
+      ],
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "dependencyDashboardApproval": true
+    }
+  ]
+}

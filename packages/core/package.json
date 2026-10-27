@@ -1,0 +1,28 @@
+{
+  "name": "@mycms/core",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Framework-agnostic git-backed CMS core SDK: zod-first config builders, field-type registry, transactional GitHub backend (FF-only CAS), save pipeline, draft store, safety utils.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./web": "./src/web/index.ts",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "typecheck": "tsc -b .",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "mycms",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.9",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "check": "biome check --error-on-warnings .",
+    "format": "biome check --write .",
+    "test": "pnpm -r --no-bail run test",
+    "build": "pnpm -r --no-bail run build",
+    "e2e": "pnpm -C e2e run e2e",
+    "audit:waivers": "pnpm audit --json | node scripts/audit-waiver-filter.mjs",
+    "scan:workflows": "node scripts/ci-workflow-guard.mjs",
+    "scan:prod-purity": "node scripts/prod-purity-scan.mjs",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@changesets/cli": "catalog:",
+    "typescript": "catalog:",
+    "yaml": "catalog:"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "playground",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Dev harness: MSW FakeGithub + fixture repositories. Must pass the core contract suite (ADR-0001).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "msw": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}
