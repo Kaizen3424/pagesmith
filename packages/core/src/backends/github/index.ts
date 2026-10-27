@@ -7,6 +7,7 @@
 import { BackendReadError } from "../../backend/errors"
 import type {
   CommitChangeSet,
+  CommitOptions,
   CommitResult,
   FileRead,
   GitBackend,
@@ -18,8 +19,13 @@ import type {
   Ref,
   TreeEntryTuple,
 } from "../../backend/types"
+import {
+  BackendWriteError,
+  classifyWriteResponse,
+  networkWriteError,
+} from "../../backend/write-errors"
 import type { FetchLike, FetchResponseLike } from "../../composition"
-import { decodeBase64 } from "../../safety/encoding"
+import { decodeBase64, encodeBase64 } from "../../safety/encoding"
 import type { JsonValue } from "../../safety/untrusted-json"
 import { parseUntrustedJson } from "../../safety/untrusted-json"
 
@@ -206,11 +212,122 @@ export class GithubBackend implements GitBackend {
   }
 
   async commitChanges(
-    _changes: CommitChangeSet,
-    _baseHeadSha: string,
-    _branch: string,
+    changes: CommitChangeSet,
+    baseHeadSha: string,
+    branch: string,
+    options: CommitOptions = {},
   ): Promise<CommitResult> {
-    throw new BackendReadError("UNKNOWN", "GithubBackend write path lands in P2 (ADR-0005 §writes)")
+    const writes = [...(changes.adds ?? []), ...(changes.updates ?? [])]
+    // 1. Blobs — content-addressed, pooled (≤5 concurrent, ADR-0005 §writes).
+    const blobShas = await this.#mapLimited(writes, 5, async (write) => {
+      const payload = asRecord(
+        await this.#requestWrite(`${this.#repoUrl()}/git/blobs`, {
+          content: encodeBase64(write.bytes),
+          encoding: "base64",
+        }),
+      )
+      const sha = payload?.sha
+      if (typeof sha !== "string") {
+        throw new BackendWriteError("UNKNOWN", "GitHub blob create returned no sha")
+      }
+      return { write, sha }
+    })
+
+    // 2. Tree changes on top of the verified base tree (NEVER client-assembled).
+    const treeInput: Array<{ path: string; mode: string; type: string; sha: string | null }> = [
+      ...blobShas.map((entry) => ({
+        path: entry.write.path,
+        mode: "100644",
+        type: "blob",
+        sha: entry.sha,
+      })),
+      ...(changes.deletes ?? []).map((path) => ({ path, mode: "100644", type: "blob", sha: null })),
+    ]
+    const baseTree = await this.#resolveTreeSha(baseHeadSha)
+    const treePayload = asRecord(
+      await this.#requestWrite(`${this.#repoUrl()}/git/trees`, {
+        base_tree: baseTree,
+        tree: treeInput,
+      }),
+    )
+    const treeSha = treePayload?.sha
+    if (typeof treeSha !== "string") {
+      throw new BackendWriteError("UNKNOWN", "GitHub tree create returned no sha")
+    }
+
+    // 3. Commit naming the verified head as parent.
+    const commitPayload = asRecord(
+      await this.#requestWrite(`${this.#repoUrl()}/git/commits`, {
+        message: options.message ?? defaultCommitMessage(changes),
+        tree: treeSha,
+        parents: [baseHeadSha],
+      }),
+    )
+    const commitSha = commitPayload?.sha
+    if (typeof commitSha !== "string") {
+      throw new BackendWriteError("UNKNOWN", "GitHub commit create returned no sha")
+    }
+
+    // 4. FF-only ref update (CAS): explicit force:false, always (INV-P01).
+    await this.#requestWrite(
+      `${this.#repoUrl()}/git/refs/heads/${encodeBranch(branch)}`,
+      { sha: commitSha, force: false },
+      "PATCH",
+    )
+    return { commitSha, treeSha }
+  }
+
+  /** ≤N concurrent task pool (blob writes; INV-N01 gate posture). */
+  async #mapLimited<U, R>(
+    items: readonly U[],
+    limit: number,
+    task: (item: U) => Promise<R>,
+  ): Promise<R[]> {
+    const results = new Array<R>(items.length)
+    let cursor = 0
+    const workers = Array.from({ length: Math.min(limit, Math.max(items.length, 1)) }, async () => {
+      for (;;) {
+        const index = cursor
+        if (index >= items.length) return
+        cursor += 1
+        results[index] = await task(items[index] as U)
+      }
+    })
+    await Promise.all(workers)
+    return results
+  }
+
+  /** Write-side request helper: POST/PATCH, JSON body, classified failures. */
+  async #requestWrite(url: string, payload: unknown, method: "POST" | "PATCH" = "POST") {
+    let response: FetchResponseLike
+    try {
+      response = await this.#fetch(url, {
+        method,
+        body: JSON.stringify(payload),
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${this.#token}`,
+          "Content-Type": "application/json",
+          "X-GitHub-Api-Version": API_VERSION,
+        },
+      })
+    } catch (error) {
+      throw networkWriteError(error)
+    }
+    if (!response.ok) {
+      const text = await response.text()
+      throw classifyWriteResponse({
+        status: response.status,
+        headers: response.headers,
+        bodyText: text,
+      })
+    }
+    const text = await response.text()
+    const parsed = parseUntrustedJson(text, { maxDepth: 64 })
+    if (!parsed.ok) {
+      throw new BackendWriteError("UNKNOWN", "GitHub write response was not valid JSON")
+    }
+    return parsed.value as JsonValue
   }
 
   async #resolveTreeSha(commitSha: string): Promise<string> {
@@ -380,6 +497,13 @@ function classifyResponse(response: FetchResponseLike): BackendReadError {
 function requireBranch(branch: string): string {
   if (branch.length === 0) throw new BackendReadError("UNKNOWN", "branch must not be empty")
   return branch
+}
+
+/** Machine-checkable default — never carries skip tokens (ADR-0008 §4). */
+function defaultCommitMessage(changes: CommitChangeSet): string {
+  const count =
+    (changes.adds?.length ?? 0) + (changes.updates?.length ?? 0) + (changes.deletes?.length ?? 0)
+  return `chore(cms): save ${count} file(s)`
 }
 
 /** Encodes each branch segment, including `+` (INV-P14 branch-name test). */

@@ -7,8 +7,15 @@
  */
 
 import { BackendReadError } from "../../backend/errors"
+import {
+  type GitTreeEntry,
+  gitBlobSha,
+  gitCommitShaCanonical,
+  gitTreeSha,
+} from "../../backend/git-sha"
 import type {
   CommitChangeSet,
+  CommitOptions,
   CommitResult,
   FileRead,
   GitBackend,
@@ -20,6 +27,7 @@ import type {
   Ref,
   TreeEntryTuple,
 } from "../../backend/types"
+import { BackendWriteError } from "../../backend/write-errors"
 import { encodeUtf8 } from "../../safety/encoding"
 
 /** Typed refusal for unimplemented plumbing — callers switch on `code`. */
@@ -158,12 +166,54 @@ export class FixtureBackend implements GitBackend {
   }
 
   async commitChanges(
-    _changes: CommitChangeSet,
-    _baseHeadSha: string,
-    _branch: string,
+    changes: CommitChangeSet,
+    baseHeadSha: string,
+    branch: string,
+    options: CommitOptions = {},
   ): Promise<CommitResult> {
-    throw new ContractStubNotImplementedError(
-      "commitChanges (blobs→tree→commit→FF-updateRef) lands with the P2 write path — ADR-0005 §writes",
-    )
+    const current = this.#branchHeads.get(branch) ?? this.#spec.headSha
+    if (current !== baseHeadSha) {
+      throw new BackendWriteError(
+        "CAS_CONFLICT",
+        `fixture branch ${branch} no longer points at ${baseHeadSha}`,
+        {},
+      )
+    }
+    const base = this.#snapshots.get(baseHeadSha)
+    if (base === undefined) {
+      throw new BackendWriteError("NOT_FOUND", `fixture snapshot missing: ${baseHeadSha}`, {})
+    }
+
+    const next = new Map(base)
+    const writes = [...(changes.adds ?? []), ...(changes.updates ?? [])]
+    for (const write of writes) {
+      next.set(write.path, { bytes: write.bytes, sha: await gitBlobSha(write.bytes) })
+    }
+    for (const path of changes.deletes ?? []) {
+      next.delete(path)
+    }
+
+    const entries: GitTreeEntry[] = [...next.entries()]
+      .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+      .map(([path, file]) => ({ path, mode: "100644", type: "blob", sha: file.sha }))
+    const treeSha = await gitTreeSha(entries)
+    const commitSha = await gitCommitShaCanonical({
+      treeSha,
+      parentShas: [current],
+      message: options.message ?? defaultFixtureCommitMessage(changes),
+    })
+    if (!this.#snapshots.has(commitSha)) {
+      this.#snapshots.set(commitSha, next)
+      this.#branchHeads.set(branch, commitSha)
+    }
+    // Idempotent retry: equal content resolves to the same commit sha (INV-P03).
+    return { commitSha, treeSha }
   }
+}
+
+/** Machine-checkable content-commit default (AGENTS.md §4; ADR-0008 §4). */
+function defaultFixtureCommitMessage(changes: CommitChangeSet): string {
+  const count =
+    (changes.adds?.length ?? 0) + (changes.updates?.length ?? 0) + (changes.deletes?.length ?? 0)
+  return `chore(cms): save ${count} file(s)`
 }

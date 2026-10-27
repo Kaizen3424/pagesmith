@@ -3,9 +3,12 @@
  *
  * The SAME suite every backend implementation must pass (GithubBackend,
  * reference-fixture-backend exemplar, Stage-B GitLab — and the playground's
- * FakeGithub). P1 adds the read-side checks; write-side checks land in P2.
+ * FakeGithub). Checks are self-contained and sequential; write checks run
+ * AFTER read checks and leave HEAD in a coherent state.
  */
+import { encodeUtf8 } from "../../safety/encoding"
 import type { GitBackend } from "../types"
+import { BackendWriteError } from "../write-errors"
 
 export interface ContractContext {
   readonly backend: GitBackend
@@ -189,10 +192,85 @@ export const EMPTY_DIFF_CHECK: ContractCheck = {
   },
 }
 
+const WRITE_CHECK_PATH = "src/content/contract-write-check.json"
+const WRITE_CHECK_CAS_PATH = "src/content/contract-cas-check.json"
+const WRITE_CHECK_BYTES = '{\n  "contract": "write-check"\n}\n'
+const WRITE_CHECK_CAS_BYTES = '{\n  "contract": "cas-check"\n}\n'
+
+/** Transactional green path: one commit, exact diff, byte-exact read-back. */
+export const WRITE_COMMIT_CHECK: ContractCheck = {
+  name: "backend-writes/single-commit-roundtrip",
+  async run({ backend, branch }) {
+    const baseline = await backend.getRef(branch)
+    const result = await backend.commitChanges(
+      { adds: [{ path: WRITE_CHECK_PATH, bytes: encodeUtf8(WRITE_CHECK_BYTES) }] },
+      baseline.object.sha,
+      branch,
+      { message: "chore(cms): contract suite write check" },
+    )
+    if (!/^[0-9a-f]{40}$/.test(result.commitSha)) {
+      throw new Error("commitChanges returned a non-40-hex commitSha")
+    }
+    if (!/^[0-9a-f]{40}$/.test(result.treeSha)) {
+      throw new Error("commitChanges returned a non-40-hex treeSha")
+    }
+    const head = await backend.getRef(branch)
+    if (head.object.sha !== result.commitSha) {
+      throw new Error("ref did not advance to the created commit after commitChanges")
+    }
+    const diff = await backend.listChangedFiles(branch, baseline.object.sha, result.commitSha)
+    if (diff.size !== 1 || !diff.has(WRITE_CHECK_PATH)) {
+      throw new Error("write produced a diff other than exactly its own path")
+    }
+    const written = diff.get(WRITE_CHECK_PATH)
+    const file = await backend.readFile(branch, WRITE_CHECK_PATH, written?.sha ?? "")
+    if (file.kind !== "file") throw new Error("written file is not readable back")
+    const bytes = encodeUtf8(WRITE_CHECK_BYTES)
+    if (file.file.bytes.length !== bytes.length) throw new Error("written bytes length mismatch")
+    for (let index = 0; index < bytes.length; index += 1) {
+      if (file.file.bytes[index] !== bytes[index]) throw new Error("written bytes mismatch")
+    }
+  },
+}
+
+/** CAS law: a stale-base commit is refused; HEAD never moves backwards. */
+export const WRITE_CAS_CHECK: ContractCheck = {
+  name: "backend-writes/stale-base-refusal",
+  async run({ backend, branch }) {
+    const current = await backend.getRef(branch)
+    const landed = await backend.commitChanges(
+      { adds: [{ path: WRITE_CHECK_PATH, bytes: encodeUtf8(WRITE_CHECK_BYTES) }] },
+      current.object.sha,
+      branch,
+      { message: "chore(cms): contract suite CAS pre-step" },
+    )
+    let refused: unknown
+    try {
+      await backend.commitChanges(
+        { adds: [{ path: WRITE_CHECK_CAS_PATH, bytes: encodeUtf8(WRITE_CHECK_CAS_BYTES) }] },
+        current.object.sha,
+        branch,
+        { message: "chore(cms): contract suite stale attempt" },
+      )
+    } catch (error) {
+      refused = error
+    }
+    if (!(refused instanceof BackendWriteError) || refused.code !== "CAS_CONFLICT") {
+      throw new Error("a stale-base commit did not refuse as CAS_CONFLICT")
+    }
+    const head = await backend.getRef(branch)
+    if (head.object.sha !== landed.commitSha) {
+      throw new Error("HEAD moved as a result of the refused stale commit")
+    }
+  },
+}
+
 export const CORE_CONTRACT_SUITE = defineContractSuite([
   SHAPE_CHECK,
   READ_TREE_CHECK,
   READ_FILE_CHECK,
   ETAG_CHECK,
   EMPTY_DIFF_CHECK,
+  WRITE_COMMIT_CHECK,
+  WRITE_CAS_CHECK,
 ])

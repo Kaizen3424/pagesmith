@@ -136,3 +136,20 @@ export function decodeBase64(text: string): Uint8Array {
   }
   return Uint8Array.from(bytes)
 }
+
+/** Standard padded base64 (GitHub-style frame; decode tolerates whitespace). */
+export function encodeBase64(bytes: Uint8Array): string {
+  let out = ""
+  const chunks = 3
+  for (let index = 0; index < bytes.length; index += chunks) {
+    const first = bytes[index] as number
+    const second = bytes[index + 1]
+    const third = bytes[index + 2]
+    const group = (first << 16) | ((second ?? 0) << 8) | (third ?? 0)
+    out += BASE64_ALPHABET[(group >> 18) & 63]
+    out += BASE64_ALPHABET[(group >> 12) & 63]
+    out += second === undefined ? "=" : BASE64_ALPHABET[(group >> 6) & 63]
+    out += third === undefined ? "=" : BASE64_ALPHABET[group & 63]
+  }
+  return out
+}

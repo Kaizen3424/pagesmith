@@ -34,9 +34,20 @@ export {
   defineContractSuite,
   runContractSuite,
   SHAPE_CHECK,
+  WRITE_CAS_CHECK,
+  WRITE_COMMIT_CHECK,
 } from "./backend/contract-suite"
 export type { ReadErrorCode } from "./backend/errors"
 export { BackendReadError, isBackendReadError } from "./backend/errors"
+export type {
+  FakeGithubSpec,
+  FakeRequest,
+  FakeRequestLogEvent,
+  FakeResponse,
+} from "./backend/fake-github-server"
+export { FakeGithubServer } from "./backend/fake-github-server"
+export type { GitTreeEntry } from "./backend/git-sha"
+export { gitBlobSha, gitCommitShaCanonical, gitTreeSha, sha1Hex } from "./backend/git-sha"
 export type { GithubProbeOptions } from "./backend/github/probe"
 export { probeGithubCapabilities } from "./backend/github/probe"
 export type { ReadTreeLike, Result, TreeTruncationIssue } from "./backend/guards"
@@ -58,6 +69,13 @@ export type {
   TreeEntryTuple,
   TreeRead,
 } from "./backend/types"
+export type { WriteErrorCode } from "./backend/write-errors"
+export {
+  BackendWriteError,
+  classifyWriteResponse,
+  isBackendWriteError,
+  networkWriteError,
+} from "./backend/write-errors"
 export type { GithubBackendOptions } from "./backends/github"
 export { encodeBranch, GithubBackend } from "./backends/github"
 export type { FixtureFile, FixtureRepoSpec } from "./backends/reference-fixture-backend"
@@ -194,9 +212,28 @@ export {
   unwrapFieldSchema,
   validateEntryForSave,
 } from "./fields"
-export type { SavePhase } from "./pipeline"
-// pipeline vocabulary
-export { SAVE_PHASE_ORDER } from "./pipeline"
+// pipeline (C.1): save driver + laws + policy
+export type {
+  CommitMessageVerdict,
+  ConcurrencyLimiter,
+  RateDescriptor,
+  SaveConflictDetails,
+  SaveDriverInput,
+  SavePhase,
+  SaveVerdict,
+} from "./pipeline"
+export {
+  composeCommitMessage,
+  containsSkipToken,
+  createConcurrencyLimiter,
+  createRateResume,
+  describeRatePause,
+  isZeroDiffChangeSet,
+  parseRateWindowReset,
+  parseRetryAfter,
+  runSave,
+  SAVE_PHASE_ORDER,
+} from "./pipeline"
 export type {
   JsonPrimitive,
   JsonValue,

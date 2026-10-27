@@ -4,6 +4,8 @@ import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { describe, expect, it } from "vitest"
 import { FixtureBackend } from "../../backends/reference-fixture-backend"
+import { buildSpec, createHarness } from "../../pipeline/__tests__/fake-github-fetch"
+import { runSave } from "../../pipeline/save-driver"
 import {
   documentsCanonicallyEqual,
   parseJsonDocument,
@@ -45,6 +47,62 @@ describe("INV-S02 P1 scope: serializer identity + CRLF + empty tree diff", () =>
     const head = "a".repeat(40)
     const backend = new FixtureBackend({ headSha: head, treeSha: "b".repeat(40), files: new Map() })
     const diff = await backend.listChangedFiles("fixture", head, head)
+    expect(diff.size).toBe(0)
+  })
+})
+
+describe("INV-S02 C.1 scope: zero-diff drive skips the save entirely (L1)", () => {
+  it("no-op changesets end as noop verdicts with ZERO network writes", async () => {
+    const spec = await buildSpec([
+      ["src/content/site.json", '{\n  "title": "site"\n}\n'],
+      ["src/content/products/iris.json", '{\n  "title": "iris"\n}\n'],
+    ])
+    const harness = createHarness(spec)
+    const verdict = await runSave({
+      backend: harness.backend,
+      branch: "fixture-branch",
+      // Byte-identical update + delete of a path that never existed.
+      changes: {
+        updates: [
+          {
+            path: "src/content/site.json",
+            bytes: new TextEncoder().encode('{\n  "title": "site"\n}\n'),
+          },
+        ],
+        deletes: ["src/content/never-existed.json"],
+      },
+    })
+    expect(verdict.kind).toBe("noop")
+    // Zero WRITES — the ref/tree reads the fresh-binding rule requires stay.
+    expect(harness.server.log.some((event) => event.method !== "GET")).toBe(false)
+    expect(harness.server.ref("fixture-branch")).toBe(spec.headSha)
+  })
+
+  it("an equal-content tree overlay reproduces the base tree sha exactly", async () => {
+    const spec = await buildSpec([["src/content/site.json", '{\n  "title": "site"\n}\n']])
+    const harness = createHarness(spec)
+    // Direct primitive question: overlaying identical content onto the seeded
+    // tree yields the SAME tree sha (content addressing) — the exact equality
+    // the driver-level zero-diff gate stands in for.
+    const payload = await harness.backend.commitChanges(
+      {
+        updates: [
+          {
+            path: "src/content/site.json",
+            bytes: new TextEncoder().encode('{\n  "title": "site"\n}\n'),
+          },
+        ],
+      },
+      spec.headSha,
+      "quiet-branch",
+    )
+    expect(payload.treeSha).toBe(spec.treeSha)
+    // The backend is a primitive — the diff proves the commit was a no-op.
+    const diff = await harness.backend.listChangedFiles(
+      "quiet-branch",
+      spec.headSha,
+      payload.commitSha,
+    )
     expect(diff.size).toBe(0)
   })
 })

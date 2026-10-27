@@ -66,7 +66,7 @@ describe("contract suite runner (ADR-0001: one suite for every backend)", () => 
   })
 })
 
-describe("FixtureBackend (ADR-0009 exemplar stub)", () => {
+describe("FixtureBackend (ADR-0009 exemplar)", () => {
   it("branches are parameters — any branch works, none are hardcoded (INV-P14 posture)", async () => {
     const head = "4a".repeat(20)
     const stagingSha = "5b".repeat(20)
@@ -79,12 +79,39 @@ describe("FixtureBackend (ADR-0009 exemplar stub)", () => {
     expect(fallback.object.sha).toBe(head)
   })
 
-  it("write-path plumbing refuses loudly until P2 (typed stub refusal)", async () => {
-    const fixture = new FixtureBackend({ headSha: "6c".repeat(20) })
-    await expect(
-      fixture.commitChanges({ deletes: ["x.json"] }, "6c".repeat(20), "staging"),
-    ).rejects.toMatchObject({
-      code: "STUB_NOT_IMPLEMENTED",
+  it("writes transactionally and reads its own commit back (P2 write path)", async () => {
+    const head = "6c".repeat(20)
+    const fixture = new FixtureBackend({ headSha: head, files: new Map() })
+    const result = await fixture.commitChanges(
+      { adds: [{ path: "src/content/new.json", bytes: encodeUtf8('{"title":"new"}\n') }] },
+      head,
+      "fixture-branch",
+    )
+    expect(result.commitSha).toMatch(/^[0-9a-f]{40}$/)
+    const ref = await fixture.getRef("fixture-branch")
+    expect(ref.object.sha).toBe(result.commitSha)
+    const tree = await fixture.readTree("fixture-branch", result.commitSha)
+    if (tree.kind !== "tree") throw new Error("expected tree")
+    expect(tree.tree.entries.map((entry) => entry.path)).toContain("src/content/new.json")
+    const diff = await fixture.listChangedFiles("fixture-branch", head, result.commitSha)
+    expect([...diff.keys()]).toEqual(["src/content/new.json"])
+  })
+
+  it("refuses stale-base CAS writes instead of overwriting (INV-P01 posture)", async () => {
+    const head = "7d".repeat(20)
+    const fixture = new FixtureBackend({
+      headSha: head,
+      files: new Map([["src/content/site.json", textFixtureFile(FILE_TEXT, FILE_SHA)]]),
     })
+    fixture.setBranchHead("fixture-branch", "9e".repeat(20))
+    await expect(
+      fixture.commitChanges(
+        { updates: [{ path: "src/content/site.json", bytes: encodeUtf8('{"a":2}') }] },
+        head,
+        "fixture-branch",
+      ),
+    ).rejects.toMatchObject({ code: "CAS_CONFLICT" })
+    // HEAD unchanged after the refusal.
+    expect((await fixture.getRef("fixture-branch")).object.sha).toBe("9e".repeat(20))
   })
 })

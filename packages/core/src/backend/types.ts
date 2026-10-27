@@ -88,6 +88,15 @@ export interface GitBackendCapabilities {
   readonly branches: boolean
 }
 
+/**
+ * Commit context (ADR-0005 P2 addendum): `createCommit` requires a message; the
+ * pipeline supplies the machine-checkable `chore(cms): …` default (ADR-0008 §4
+ * skip-token law polices user-editable messages — pure pipeline concern).
+ */
+export interface CommitOptions {
+  readonly message?: string
+}
+
 export interface GitBackend {
   readonly capabilities: GitBackendCapabilities
   getRef(branch: string): Promise<Ref>
@@ -107,5 +116,6 @@ export interface GitBackend {
     changes: CommitChangeSet,
     baseHeadSha: string,
     branch: string,
+    options?: CommitOptions,
   ): Promise<CommitResult>
 }
