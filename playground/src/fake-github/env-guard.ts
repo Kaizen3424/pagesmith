@@ -6,12 +6,12 @@
  */
 
 /** Exactly the env var name that must equal "1" to unlock a real target. */
-export const REAL_TARGET_ENV = "MYCMS_ALLOW_REAL_GITHUB";
+export const REAL_TARGET_ENV = "MYCMS_ALLOW_REAL_GITHUB"
 
 /** Visible target label — red banner text when a real repo is the target. */
-export const REAL_TARGET_BANNER = "REAL REPO TARGET";
+export const REAL_TARGET_BANNER = "REAL REPO TARGET"
 
-export type EnvLike = Readonly<Record<string, string | undefined>>;
+export type EnvLike = Readonly<Record<string, string | undefined>>
 
 /**
  * Refuses real GitHub unless the kill-guard env var is exactly "1".
@@ -19,5 +19,5 @@ export type EnvLike = Readonly<Record<string, string | undefined>>;
  * accept-by-run explicitness only.
  */
 export function allowRealGithub(env: EnvLike): boolean {
-  return env[REAL_TARGET_ENV] === "1";
+  return env[REAL_TARGET_ENV] === "1"
 }

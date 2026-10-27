@@ -1,9 +1,9 @@
-import { Label } from "@radix-ui/react-label";
-import { Slot } from "@radix-ui/react-slot";
-import { useForm } from "react-hook-form";
+import { Label } from "@radix-ui/react-label"
+import { Slot } from "@radix-ui/react-slot"
+import { useForm } from "react-hook-form"
 
 interface LoginValues {
-  readonly pat: string;
+  readonly pat: string
 }
 
 /**
@@ -12,14 +12,14 @@ interface LoginValues {
  * Copy law: founder vocabulary — access key (never "token"), no banned words.
  */
 export function LoginScreen() {
-  const { register, watch } = useForm<LoginValues>({ defaultValues: { pat: "" } });
-  const pat = watch("pat");
+  const { register, watch } = useForm<LoginValues>({ defaultValues: { pat: "" } })
+  const pat = watch("pat")
 
   return (
     <main className="min-h-dvh bg-bg text-text-primary font-display flex items-center justify-center p-6">
       <form
         onSubmit={(event) => {
-          event.preventDefault();
+          event.preventDefault()
         }}
         className="w-full max-w-sm rounded-card border border-border-soft bg-surface p-8"
       >
@@ -51,5 +51,5 @@ export function LoginScreen() {
         </Slot>
       </form>
     </main>
-  );
+  )
 }

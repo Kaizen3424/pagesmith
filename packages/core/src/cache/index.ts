@@ -4,5 +4,5 @@
  * ETag conditional GETs live inside queryFns; keys carry refSha.
  */
 export interface SnapshotRef {
-  readonly headSha: string;
+  readonly headSha: string
 }

@@ -6,5 +6,5 @@
 
 export interface WidgetBinding {
   /** Name of the core field type this widget renders (ADR-0009 join-by-name law). */
-  readonly fieldTypeName: string;
+  readonly fieldTypeName: string
 }

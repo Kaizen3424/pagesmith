@@ -6,33 +6,35 @@
  */
 
 export interface ResultOk<T> {
-  readonly ok: true;
-  readonly value: T;
+  readonly ok: true
+  readonly value: T
 }
 
 export interface ResultErr<E> {
-  readonly ok: false;
-  readonly error: E;
+  readonly ok: false
+  readonly error: E
 }
 
-export type Result<T, E> = ResultOk<T> | ResultErr<E>;
+export type Result<T, E> = ResultOk<T> | ResultErr<E>
 
 export interface ReadTreeLike {
-  readonly truncated: boolean;
-  readonly sha?: string;
+  readonly truncated: boolean
+  readonly sha?: string
 }
 
 export interface TreeTruncationIssue {
-  readonly code: "TREE_TRUNCATED";
-  readonly sha?: string;
-  readonly detail: string;
+  readonly code: "TREE_TRUNCATED"
+  readonly sha?: string
+  readonly detail: string
 }
 
 /**
  * Truncation assert: `truncated: true` is a LOUD degradation signal (master-plan
  * TR5) — callers fall back to per-subtree non-recursive walks (INV-N02).
  */
-export function assertNotTruncated<T extends ReadTreeLike>(read: T): Result<T, TreeTruncationIssue> {
+export function assertNotTruncated<T extends ReadTreeLike>(
+  read: T,
+): Result<T, TreeTruncationIssue> {
   if (read.truncated) {
     return {
       ok: false,
@@ -41,7 +43,7 @@ export function assertNotTruncated<T extends ReadTreeLike>(read: T): Result<T, T
         sha: read.sha,
         detail: "recursive tree read came back truncated — subtree-walk fallback required",
       },
-    };
+    }
   }
-  return { ok: true, value: read };
+  return { ok: true, value: read }
 }

@@ -14,45 +14,45 @@ import type {
   GitBackendCapabilities,
   Ref,
   TreeEntryTuple,
-} from "../../backend/types";
+} from "../../backend/types"
 
 /** Typed refusal for unimplemented P0 plumbing — callers switch on `code`. */
 export class ContractStubNotImplementedError extends Error {
-  override readonly name = "ContractStubNotImplementedError";
+  override readonly name = "ContractStubNotImplementedError"
   /** `readonly code` as a literal to keep the failure class machine-matchable. */
-  readonly code = "STUB_NOT_IMPLEMENTED";
+  readonly code = "STUB_NOT_IMPLEMENTED"
 
   constructor(what: string) {
-    super(`reference-fixture-backend (P0 stub) not implemented: ${what}`);
+    super(`reference-fixture-backend (P0 stub) not implemented: ${what}`)
   }
 }
 
 export interface FixtureRepoSpec {
   /** Head commit sha of the fixture tree (data, not a code literal). */
-  readonly headSha: string;
-  readonly capabilities?: Partial<GitBackendCapabilities>;
+  readonly headSha: string
+  readonly capabilities?: Partial<GitBackendCapabilities>
 }
 
 export class FixtureBackend implements GitBackend {
-  readonly #branchHeads = new Map<string, string>();
-  readonly #spec: FixtureRepoSpec;
+  readonly #branchHeads = new Map<string, string>()
+  readonly #spec: FixtureRepoSpec
 
   constructor(spec: FixtureRepoSpec) {
-    this.#spec = spec;
+    this.#spec = spec
   }
 
   /** Test hook for future ref-state plumbing (P1/P2). */
   setBranchHead(branch: string, sha: string): void {
-    this.#branchHeads.set(branch, sha);
+    this.#branchHeads.set(branch, sha)
   }
 
   get capabilities(): GitBackendCapabilities {
-    return { commitStatus: true, branches: true, ...this.#spec.capabilities };
+    return { commitStatus: true, branches: true, ...this.#spec.capabilities }
   }
 
   async getRef(branch: string): Promise<Ref> {
-    const sha = this.#branchHeads.get(branch) ?? this.#spec.headSha;
-    return { ref: `refs/heads/${branch}`, object: { sha, type: "commit" } };
+    const sha = this.#branchHeads.get(branch) ?? this.#spec.headSha
+    return { ref: `refs/heads/${branch}`, object: { sha, type: "commit" } }
   }
 
   async listChangedFiles(
@@ -61,7 +61,7 @@ export class FixtureBackend implements GitBackend {
   ): Promise<ReadonlyMap<string, TreeEntryTuple>> {
     throw new ContractStubNotImplementedError(
       "listChangedFiles (tree set-diff) lands with the P1 read path — ADR-0005 §reads",
-    );
+    )
   }
 
   async commitChanges(
@@ -71,6 +71,6 @@ export class FixtureBackend implements GitBackend {
   ): Promise<CommitResult> {
     throw new ContractStubNotImplementedError(
       "commitChanges (blobs→tree→commit→FF-updateRef) lands with the P2 write path — ADR-0005 §writes",
-    );
+    )
   }
 }

@@ -13,6 +13,6 @@ export const SAVE_PHASE_ORDER = [
   "conflict",
   "failed",
   "paused",
-] as const;
+] as const
 
-export type SavePhase = (typeof SAVE_PHASE_ORDER)[number];
+export type SavePhase = (typeof SAVE_PHASE_ORDER)[number]

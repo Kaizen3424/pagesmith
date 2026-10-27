@@ -1,5 +1,5 @@
 /** Playwright journeys (chromium-only, spec §4 L2) vs the playground BUILD. */
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test"
 
 export default defineConfig({
   testDir: "./specs",
@@ -15,9 +15,10 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: "pnpm -C ../playground build && pnpm -C ../playground preview --port 4173 --strictPort",
+    command:
+      "pnpm -C ../playground build && pnpm -C ../playground preview --port 4173 --strictPort",
     url: "http://localhost:4173",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
-});
+})

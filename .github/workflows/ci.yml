@@ -1,0 +1,71 @@
+name: ci
+
+# ADR-0010 §2.6 CI law: job-level `contents: read`, zero `pull_request_target`,
+# SHA-pinned actions — enforced on THIS file by scripts/ci-workflow-guard.mjs.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly waiver-filtered audit (Monday 04:40 UTC).
+    - cron: "40 4 * * 1"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up pnpm (pinned via packageManager)
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Verify CI law on our own workflows
+        run: pnpm run scan:workflows
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck (tsc -b)
+        run: pnpm run typecheck
+      - name: Biome (lint + format, errors on warnings)
+        run: pnpm run check
+      - name: Workspace tests (core coverage gate on)
+        run: pnpm run test
+      - name: Build all
+        run: pnpm run build
+      - name: Prod purity byte-scan (admin dist)
+        run: pnpm run scan:prod-purity
+      - name: Install chromium (explicit, never a dependency postinstall)
+        run: pnpm -C e2e exec playwright install --with-deps chromium
+      - name: E2E smoke (journeys vs playground build)
+        run: pnpm run e2e
+
+  audit:
+    # Waiver-filtered scheduled audit (P0.3 schema; security/audit-waivers.yml).
+    if: github.event_name == 'schedule'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up pnpm (pinned via packageManager)
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: Audit (zero-install; waiver-filtered)
+        run: pnpm audit --json | node scripts/audit-waiver-filter.mjs

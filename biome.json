@@ -25,6 +25,17 @@
     "lineWidth": 100,
     "lineEnding": "lf"
   },
+  "overrides": [
+    {
+      "includes": ["**/*.md"],
+      "formatter": {
+        "enabled": false
+      },
+      "assist": {
+        "enabled": false
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
@@ -32,14 +43,18 @@
       "trailingCommas": "all"
     }
   },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "linter": {
     "rules": {
-      "recommended": true,
-      "correctness": {
-        "noDangerouslySetInnerHTML": "error"
-      },
+      "preset": "recommended",
       "security": {
-        "noBlankTarget": "error"
+        "noBlankTarget": "error",
+        "noDangerouslySetInnerHtml": "error",
+        "noGlobalEval": "error"
       }
     }
   }

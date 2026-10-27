@@ -6,18 +6,18 @@
  * (`${repo}/${collection}/${slug}/media/${n}`); settings documents are keyed
  * by file path.
  */
-export type DraftKey = string;
+export type DraftKey = string
 
 export interface DraftRecord<T = unknown> {
-  readonly key: DraftKey;
-  readonly value: T;
-  readonly savedAt: string;
+  readonly key: DraftKey
+  readonly value: T
+  readonly savedAt: string
 }
 
 /** Node-safe seam — the IDB implementation lives in `core/web` (browser-only). */
 export interface DraftStore {
-  get<T>(key: DraftKey): Promise<DraftRecord<T> | undefined>;
-  put<T>(record: DraftRecord<T>): Promise<void>;
-  delete(key: DraftKey): Promise<void>;
-  list(prefix?: string): Promise<readonly DraftRecord[]>;
+  get<T>(key: DraftKey): Promise<DraftRecord<T> | undefined>
+  put<T>(record: DraftRecord<T>): Promise<void>
+  delete(key: DraftKey): Promise<void>
+  list(prefix?: string): Promise<readonly DraftRecord[]>
 }

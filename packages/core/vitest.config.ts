@@ -3,7 +3,7 @@
  * modules from day one; P0 stubs carry enough tested executable surface to
  * hold the gate before P1/P2 land mechanisms.
  */
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
   test: {
@@ -15,4 +15,4 @@ export default defineConfig({
       thresholds: { lines: 90, statements: 90 },
     },
   },
-});
+})

@@ -15,4 +15,4 @@ export type FieldTypeName =
   | "image"
   | "relation"
   | "hidden"
-  | "slug";
+  | "slug"

@@ -1,6 +1,6 @@
 /** Auth seam — ADR-0002 (PAT-only v1; the OAuth Worker fills `AuthProvider` in Stage B). */
 
-export type AuthKind = "pat" | "oauth-worker";
+export type AuthKind = "pat" | "oauth-worker"
 
 /**
  * Token lifecycle conditions (ADR-0002, encoding as interface law):
@@ -9,7 +9,7 @@ export type AuthKind = "pat" | "oauth-worker";
  * sessionStorage fallback mode stays available per device.
  */
 export interface AuthProvider {
-  readonly kind: AuthKind;
+  readonly kind: AuthKind
   /** Login-time capability probe — implementation lands in P1.8. */
-  probe(): Promise<boolean>;
+  probe(): Promise<boolean>
 }
