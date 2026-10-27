@@ -1,10 +1,15 @@
 /**
- * MSW FakeGithub — P1.14 read-side handlers.
+ * MSW FakeGithub — P1.14 read handlers + P2 write handlers.
  *
- * Implements the GitHub endpoints GithubBackend + the capability probe touch:
- * repo, ref, commit, recursive tree (ETag/304/truncation chaos), contents,
- * blobs, rate_limit, protection, and check-runs. No write endpoints until P2.
+ * ALL endpoint semantics (refs, commits, trees, blobs, contents, writes,
+ * FF-only CAS) delegate to the core `FakeGithubServer` reference model, so the
+ * fixture harness and the core INVs share ONE framing/permission source
+ * (ADR-0005 P2 addendum). This file stays the transport layer: URL routing,
+ * ETag/304, truncation chaos, auth + rate-limit guards, response shaping.
  */
+
+import type { FakeResponse } from "@mycms/core"
+import { FakeGithubServer } from "@mycms/core"
 import { HttpResponse, http } from "msw"
 import type { FixtureRepoFile, FixtureRepoSnapshot } from "./fixture-repo"
 
@@ -41,22 +46,21 @@ export function createFakeGithubHandlers(
 ) {
   const repoPath = `${API_ORIGIN}/repos/${tags.owner}/${tags.repo}`
   const chaos = options.chaos ?? {}
-  const treeEtag = `"tree-${snapshot.treeSha}"`
-  const treeEntries = [...snapshot.entries.values()]
-    .sort((left, right) => left.path.localeCompare(right.path))
-    .map((entry) => ({
-      path: entry.path,
-      mode: "100644",
-      type: "blob" as const,
-      sha: entry.sha,
-      size: entry.bytes.byteLength,
-    }))
+  const server = new FakeGithubServer({
+    defaultBranch: snapshot.defaultBranch,
+    headSha: snapshot.headSha,
+    treeSha: snapshot.treeSha,
+    files: new Map(
+      [...snapshot.entries.values()].map((entry) => [
+        entry.path,
+        { bytes: entry.bytes, sha: entry.sha },
+      ]),
+    ),
+  })
   let rateLimited = false
 
-  const guarded = (
-    resolver: (args: Parameters<Parameters<typeof http.get>[1]>[0]) => Response | Promise<Response>,
-  ) => {
-    return (args: Parameters<Parameters<typeof http.get>[1]>[0]) => {
+  const guarded = (resolver: (args: RequestGuardArgs) => Response | Promise<Response>) => {
+    return (args: RequestGuardArgs) => {
       if (
         options.requireAuth === true &&
         !args.request.headers.get("authorization")?.startsWith("Bearer ")
@@ -76,6 +80,13 @@ export function createFakeGithubHandlers(
       return resolver(args)
     }
   }
+
+  /** Adapter: repo-relative path → FakeGithubServer → HttpResponse. */
+  const toHttp = (response: FakeResponse): Response =>
+    HttpResponse.json(response.json ?? {}, {
+      status: response.status,
+      headers: { ...rateHeaders(), ...(response.headers ?? {}) },
+    })
 
   return [
     http.get(
@@ -122,11 +133,12 @@ export function createFakeGithubHandlers(
       guarded(({ request }) => {
         const branch = refBranch(request.url)
         if (branch === null) return notFound()
+        const sha = server.ref(branch) ?? snapshot.headSha
         return HttpResponse.json(
           {
             ref: `refs/heads/${branch}`,
             node_id: fixtureNodeId(branch),
-            object: { sha: snapshot.headSha, type: "commit" },
+            object: { sha, type: "commit" },
           },
           { headers: rateHeaders() },
         )
@@ -134,40 +146,52 @@ export function createFakeGithubHandlers(
     ),
     http.get(
       `${repoPath}/git/commits/:sha`,
-      guarded(({ params }) => {
-        if (String(params.sha) !== snapshot.headSha) return notFound()
-        return HttpResponse.json(
-          {
-            sha: snapshot.headSha,
-            tree: { sha: snapshot.treeSha },
-          },
-          { headers: rateHeaders() },
+      guarded(async ({ params }) => {
+        return toHttp(
+          await server.handle({
+            method: "GET",
+            path: `/git/commits/${String(params.sha)}`,
+          }),
         )
       }),
     ),
     http.get(
       `${repoPath}/git/trees/:sha`,
-      guarded(({ request, params }) => {
-        if (String(params.sha) !== snapshot.treeSha) return notFound()
+      guarded(async ({ request, params }) => {
+        const sha = String(params.sha)
+        const response = await server.handle({ method: "GET", path: `/git/trees/${sha}` })
+        if (response.status === 404) return notFound()
         const recursive = new URL(request.url).searchParams.get("recursive") === "1"
-        const etag = recursive ? treeEtag : `"${snapshot.treeSha}-flat"`
+        const etag = recursive ? `"tree-${sha}"` : `"${sha}-flat"`
         if (request.headers.get("if-none-match") === etag) {
           return new HttpResponse(null, { status: 304, headers: { etag } })
         }
         if (recursive && chaos.truncateTree === true) {
           return HttpResponse.json(
-            { sha: snapshot.treeSha, truncated: true, tree: [] },
+            { sha, truncated: true, tree: [] },
             { headers: { ...rateHeaders(), etag } },
           )
         }
         if (!recursive && chaos.truncateSubtrees === true) {
           return HttpResponse.json(
-            { sha: snapshot.treeSha, truncated: true, tree: [] },
+            { sha, truncated: true, tree: [] },
             { headers: { ...rateHeaders(), etag } },
           )
         }
+        const payload = (response.json ?? {}) as {
+          sha: string
+          truncated: boolean
+          tree: Array<{ path: string; mode: string; type: string; sha: string }>
+        }
         return HttpResponse.json(
-          { sha: snapshot.treeSha, truncated: false, tree: treeEntries },
+          {
+            sha: payload.sha,
+            truncated: payload.truncated,
+            tree: payload.tree.map((entry) => {
+              const size = server.blobSize(entry.sha)
+              return size === undefined ? entry : { ...entry, size }
+            }),
+          },
           { headers: { ...rateHeaders(), etag } },
         )
       }),
@@ -178,7 +202,17 @@ export function createFakeGithubHandlers(
         const path = contentsPath(request.url)
         if (path === null) return notFound()
         if (chaos.notFoundPaths?.includes(path) === true) return notFound()
-        const entry = snapshot.entries.get(path)
+        const ref = new URL(request.url).searchParams.get("ref") ?? snapshot.defaultBranch
+        const resolved = server.contents(ref, path) ?? snapshot.entries.get(path)
+        const entry: FixtureRepoFile | undefined =
+          resolved === undefined
+            ? undefined
+            : {
+                path,
+                bytes: resolved.bytes,
+                sha: resolved.sha,
+                etag: `"${resolved.sha}"`,
+              }
         if (entry === undefined) return notFound()
         const etag = `"${entry.sha}"`
         if (request.headers.get("if-none-match") === etag) {
@@ -210,21 +244,94 @@ export function createFakeGithubHandlers(
     ),
     http.get(
       `${repoPath}/git/blobs/:sha`,
-      guarded(({ params }) => {
-        const entry = findEntryBySha(snapshot.entries, String(params.sha))
-        if (entry === undefined) return notFound()
+      guarded(async ({ params }) => {
+        const response = await server.handle({
+          method: "GET",
+          path: `/git/blobs/${String(params.sha)}`,
+        })
+        if (response.status !== 404) return toHttp(response)
+        const legacy = findEntryBySha(snapshot.entries, String(params.sha))
+        if (legacy === undefined) return notFound()
         return HttpResponse.json(
           {
-            sha: entry.sha,
-            size: entry.bytes.byteLength,
+            sha: legacy.sha,
+            size: legacy.bytes.byteLength,
             encoding: "base64",
-            content: bytesToBase64(entry.bytes),
+            content: bytesToBase64(legacy.bytes),
           },
           { headers: rateHeaders() },
         )
       }),
     ),
+    // ---- P2 write handlers (same reference model, hence same CAS laws) ----
+    http.post(
+      `${repoPath}/git/blobs`,
+      guarded(async ({ request }) => {
+        return toHttp(
+          await server.handle({
+            method: "POST",
+            path: "/git/blobs",
+            body: await readJson(request),
+          }),
+        )
+      }),
+    ),
+    http.post(
+      `${repoPath}/git/trees`,
+      guarded(async ({ request }) => {
+        return toHttp(
+          await server.handle({
+            method: "POST",
+            path: "/git/trees",
+            body: await readJson(request),
+          }),
+        )
+      }),
+    ),
+    http.post(
+      `${repoPath}/git/commits`,
+      guarded(async ({ request }) => {
+        return toHttp(
+          await server.handle({
+            method: "POST",
+            path: "/git/commits",
+            body: await readJson(request),
+          }),
+        )
+      }),
+    ),
+    http.patch(
+      `${repoPath}/git/refs/heads/*`,
+      guarded(async ({ request }) => {
+        const branch = patchBranch(request.url)
+        if (branch === null) return notFound()
+        return toHttp(
+          await server.handle({
+            method: "PATCH",
+            path: `/git/refs/heads/${branch}`,
+            body: await readJson(request),
+          }),
+        )
+      }),
+    ),
   ]
+}
+
+// Handler arg types differ per verb at runtime only; the guard cares about the
+// request. MSW's PathParams allows arrays/undefined per key — read sites cast.
+interface RequestGuardArgs {
+  readonly request: Request
+  readonly params: { readonly [key: string]: string | readonly string[] | undefined }
+}
+
+async function readJson(request: Request): Promise<unknown> {
+  const text = await request.text()
+  if (text.length === 0) return undefined
+  try {
+    return JSON.parse(text)
+  } catch {
+    return undefined
+  }
 }
 
 function contentsPath(url: string): string | null {
@@ -276,6 +383,24 @@ function refBranch(url: string): string | null {
       .split("/")
       .map((segment) => decodeURIComponent(segment))
       .join("/")
+  } catch {
+    return null
+  }
+}
+
+function patchBranch(url: string): string | null {
+  const marker = "/git/refs/heads/"
+  const index = url.indexOf(marker)
+  if (index < 0) return null
+  try {
+    return (
+      url
+        .slice(index + marker.length)
+        .split("?")[0]
+        ?.split("/")
+        .map((segment) => decodeURIComponent(segment))
+        .join("/") ?? null
+    )
   } catch {
     return null
   }
