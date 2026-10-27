@@ -5,6 +5,7 @@ test("playground smoke renders the FakeGithub harness (and the origin allowlist 
   baseURL,
   page,
 }) => {
+  if (baseURL === undefined) throw new Error("playwright config must set use.baseURL")
   const origins = await installOriginAllowlist(page, new URL(baseURL).origin)
 
   await page.goto("/")
