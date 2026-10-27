@@ -47,17 +47,20 @@ The owner's v0 brainstorm remains design-valid; these loads reflect what the pan
 
 ## 3. Commands
 
-Materialized at P0 (AGENTS.md §6 mirrors). Contracted set:
+Materialized 2026-10-27 (AGENTS.md §6 mirrors). Exact set:
 
 ```
-pnpm install --frozen-lockfile        # CI-parity install
-pnpm -r typecheck                     # tsc --build via project references
-pnpm biome check                      # lint+format, --error-on-warnings in CI
-pnpm -r test                          # vitest across workspaces
-pnpm --filter @mycms/core test -- src/pipeline/__tests__/...   # focused (scope name final at P0)
-pnpm e2e                              # playwright --project=chromium
-pnpm -r build                         # tsup/vite-lib core; vite build admin + playground
-pnpm changeset                        # version discipline from day one
+pnpm install --frozen-lockfile     # CI-parity install (pnpm pinned via root packageManager)
+pnpm -r typecheck                  # per-package `tsc -b .`; `pnpm typecheck` at root = tsc -b over project references
+pnpm run check                     # biome check --error-on-warnings .  (lint + format)
+pnpm -r test                       # vitest across workspaces (core runs with the coverage gate on)
+pnpm --filter @mycms/core test -- src/__tests__/echo.test.ts   # focused (any colocated test file)
+pnpm e2e                           # playwright --project=chromium vs the playground build (webServer builds + previews it)
+pnpm -r build                      # tsup (core, ESM-only) · vite build (admin + playground)
+pnpm changeset                     # version discipline from day one; `pnpm changeset status` = non-interactive sanity
+pnpm run scan:workflows            # guard: SHA-pinned actions, job-level contents: read, no pull_request_target
+pnpm run scan:prod-purity          # admin dist byte-scan (INV-N04 posture)
+pnpm run audit:waivers             # pnpm audit --json | node scripts/audit-waiver-filter.mjs (scheduled CI job)
 ```
 
 Test-file location rule: colocated `__tests__` for core (`src/<module>/__tests__/x.test.ts`), centralized in `e2e/` for journeys, MSW parity fixtures shared from `playground/fixtures/`.

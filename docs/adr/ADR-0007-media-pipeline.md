@@ -15,3 +15,5 @@ Genesis identified canvas manipulation thread-cost and the private-repo preview 
 
 ## Consequences
 Draft restore banner must state "recovered before your last save" so a reopened product doesn't read as if queued photos went live. No LFS in v1 (documented; repo budget guard is the compensation).
+### P0 verification (2026-10-27)
+- Backend seam already shaped for the media law: `FileWrite { path, bytes }` (bytes-only; the serializer owns encoding) + fixture media dirs (playground/fixtures/repo/public/images). Worker raster pipeline lands P4. No deviation.

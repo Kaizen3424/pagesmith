@@ -24,3 +24,5 @@ BroadcastChannel alone is not a lease: implement **token + heartbeat + TTL with 
 
 ## Consequences
 GUI conflicts become FIELD-granular: non-overlapping fields auto-merge with announcements; overlapping fields → per-field choices; any discarded version archived 30 days (founder-cry prevention).
+### P0 verification (2026-10-27)
+- The exhaustive eight-phase save vocabulary is code (`SAVE_PHASE_ORDER`, echo-tested) as the anchor for the single transition table; the machine + invariant engine + `rebase()` land P2.4/P2.5. No deviation.

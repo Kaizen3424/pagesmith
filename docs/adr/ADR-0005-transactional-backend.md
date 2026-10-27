@@ -16,3 +16,5 @@ Round-1 blocker 1: a file-op-shaped backend (contents-API PUTs) produces N commi
 - Rate math documented (write burst ≈ 17 req/saves well under 900 pts/min & 5000/h; secondary limits handled by plugin-throttling + Retry-After policy).
 - GithubBackend additionally covered by recorded HTTP fixtures from a sandbox repo (transport-drift hedge).
 - `main`-hardcoding anywhere is a review-blocking defect.
+### P0 verification (2026-10-27)
+- Contract as code now: `GitBackend` (branch is a parameter on every method; `baseHeadSha` CAS; exhaustive boolean `capabilities` incl. `commitStatus`), the truncation assert `assertNotTruncated` + `Result` type (INV-N02 setup), and the shared contract-suite runner the fixture exemplar passes. Transport lands P1 (reads) / P2 (writes). No deviation.

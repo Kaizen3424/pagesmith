@@ -44,7 +44,7 @@ A git-backed zero-database CMS (headless core + brandable React admin) built in 
 - Acceptance: full gate matrix committed (see P0 file) + scheduled audit job.
 - Verify: first push green on CI (owner schedule the push when finishing).
 ### Task P0.9 — Changesets (S)
-- Acceptance: `pnpm changeset` operates; private-version-skip configured.
+- Acceptance: `pnpm changeset` operates; private packages are VERSIONED by changesets but never published/tagged (publish-skip only — ADR-0010; wording fixed 2026-10-27, supersedes "private-version-skip")
 - Verify: doc change w/ changeset file passes CI.
 ### Task P0.10 — LICENSE final (XS) — ask owner for name once.
 ### Task P0.11 — ADR verification pass (S) — notes on 0001–0010 implementability; deviations → spec updates first.

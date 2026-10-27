@@ -18,3 +18,5 @@ Genesis §2 identified the zod "metadata deficit": `z.string().min(3)` validates
 - All 12 field types must be expressible in the factory pattern incl. nested list-of-list (the incumbent's "choice tabs") — verified by the parity golden test (INV-C01).
 - Strict parse means the importer path (Stage B) maps unknown widgets to `text` + loud warnings, never trusted passthrough.
 - Error codes, not prose, from zod → human message map (01-spec §7).
+### P0 verification (2026-10-27)
+- Vocabulary pinned now: `CONFIG_SCHEMA_VERSION = 1` + the 12-name `FieldTypeName` union (packages/core/src/config, packages/core/src/fields); zod schema factories + the strict/lenient duality land P1.1/P1.2. No deviation.

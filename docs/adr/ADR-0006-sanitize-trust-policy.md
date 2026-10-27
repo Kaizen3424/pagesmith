@@ -15,3 +15,5 @@ The admin renders **untrusted repo content** (entry values, config templates lik
 
 ## Consequences
 Any future rich summary/preview feature requires a NEW ADR with an allowlisted pipeline (DOMPurify-class) — the default is denial.
+### P0 verification (2026-10-27)
+- Enforced now: biome security rules (`noDangerouslySetInnerHtml`, `noGlobalEval`, `noBlankTarget`) + the e2e catch-all origin-allowlist assertion (INV-N05 run in the smoke) + Result-shaped guard utilities (no throwing on malformed read shapes) + CI scripts (workflow guard, prod-purity byte-scan). `parseUntrustedJson` lands with P1. No deviation.

@@ -14,3 +14,5 @@ Round-1 major: the Day-1 custom-widget author — the Sveltia gap this project e
 
 ## Consequences
 Exemplar acceptance criteria are P3 (widget) and P1 (backend) gate items — not polish; the contract suite version bumps = breaking-change discipline via changesets.
+### P0 verification (2026-10-27)
+- Both registries exist as seams joined by name: `FieldTypeName` (core, 12 names) + the admin `WidgetBinding { fieldTypeName }` placeholder; the `reference-fixture-backend` exemplar stub ships and passes the shared suite (exemplar-acceptance posture). Registry mechanics land P1.2/P3. No deviation.

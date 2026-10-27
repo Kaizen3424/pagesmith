@@ -17,3 +17,6 @@ Core must stay framework-agnostic and test-unaware, yet admin/fakes/real backend
 
 ## Alternatives rejected
 Framework-coupled core (loses Stage-B portability); separate test doubles per backend (drift risk — exactly what round-1 flagged).
+### P0 verification (2026-10-27)
+- Implemented as written in code: single composition root `createMyCMS(deps)` (frozen deps, core stays node-safe) + `defineContractSuite`/`runContractSuite` runner + `SHAPE_CHECK` + the `FixtureBackend` exemplar stub passing the same suite (packages/core/src).
+- The echo test executes the full public module graph (packages/core/src/__tests__/echo.test.ts). Signed off by the P0 agent session under the owner-approved 12-slice plan — no deviation.

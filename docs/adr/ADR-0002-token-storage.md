@@ -24,3 +24,6 @@ Honest conclusion recorded: **browser at-rest cannot defend against code running
 ## Consequences
 - XSS threat model unchanged, but the blast radius of a compromise includes a standing token until rotation — accepted by owner; mitigations named above are the compensations.
 - e2e must run the full editing loop in the persisted path (INV-A01).
+### P0 verification (2026-10-27)
+- Seams in place now: `AuthProvider` law docblock (wipe on sign-out / 401-after-failed-re-probe / restore→re-probe bootstrap; never in URLs) + the masked memory-only ring-buffer logger with key- and value-level masking, stub test green (INV-A05 posture — packages/core/src/safety, packages/core/src/auth).
+- Token lifecycle mechanisms land P1.8. No deviation.

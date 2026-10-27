@@ -2,7 +2,7 @@
 
 > **Every agent session starts here.** Read this file fully, then follow §4 Session Protocol. This file never duplicates details it can point to; it is the single tracker for project state. Agents MUST maintain §3 and the task checklists — stale docs are treated as build failures.
 
-Maintained by: agent sessions · Last update rule: see §6
+Maintained by: agent sessions · Last updated: 2026-10-27 (P0 scaffold)
 
 ---
 
@@ -18,7 +18,7 @@ Maintained by: agent sessions · Last update rule: see §6
 
 | Phase | Name | Status | Exit gate (full list in phase file) |
 |---|---|---|---|
-| P0 | Scaffold & laws | ⬜ Not started | CI-verifiable scaffold green; ADRs 0001–0010 signed; specs runnable |
+| P0 | Scaffold & laws | 🟨 In progress — all 12 slices committed, local + clean-clone gates green; ⛔ GATE P0 demo/confirmation pending owner (LICENSE line + repo push deferred by owner) | CI-verifiable scaffold green; ADRs 0001–0010 signed; specs runnable |
 | P1 | Config schema + read path | ⬜ Not started | yve fixture library browses offline; lenient parse contract green |
 | P2 | Save pipeline + editor v0 | ⬜ Not started | e2e publish loop green incl. conflict + failure paths |
 | P3 | Widget system complete | ⬜ Not started | yve exact config editable on fixtures, zero code change |
@@ -27,7 +27,7 @@ Maintained by: agent sessions · Last update rule: see §6
 | P6 | yve integration cutover | ⬜ Blocked until P5 | success criteria on the real site; rollback path proven |
 | P7 | OSS publication | ⬜ Blocked until P6 | stranger completes widget exemplar unaided; release dry-run |
 
-**Current focus:** P0 (owner will start each phase in a NEW chat — never begin a phase other than the one marked here; never advance past an unticked gate).
+**Current focus:** P0 — ⛔ GATE P0 (owner demo + confirmation in chat; the clean-clone gate is green). P1 starts only in a NEW chat after the owner ticks the gate. Owner inputs still owed: LICENSE owner line + GitHub repo owner/name for the scheduled push.
 
 *Legend: ⬜ not started · 🟨 in progress · ✅ gate passed (date) · ⛔ blocked*
 
@@ -74,19 +74,20 @@ Maintained by: agent sessions · Last update rule: see §6
 | Live checklist | `tasks/todo.md` |
 | Phase briefs & gates | `docs/specs/phases/P0…P7` |
 
-## 6. Commands (materialized in P0 — do not run before scaffold exists)
+## 6. Commands (materialized 2026-10-27; 01-spec.md §3 mirrors this set)
 
 | Purpose | Command |
 |---|---|
 | Install (CI parity) | `pnpm install --frozen-lockfile` |
-| Typecheck | `pnpm -r typecheck` |
-| Lint/format check | `pnpm biome check` |
-| Tests (all) / focused | `pnpm -r test` / `pnpm --filter @<scope>/core test -- <file>` |
-| E2E | `pnpm e2e` (Playwright, chromium-only) |
-| Build all | `pnpm -r build` |
-| Changeset | `pnpm changeset` |
+| Typecheck (all) | `pnpm -r typecheck` (per-package `tsc -b .`) · root project-references form: `pnpm typecheck` |
+| Lint/format check | `pnpm run check` (= `biome check --error-on-warnings .`) |
+| Tests (all) / focused | `pnpm -r test` / `pnpm --filter @mycms/core test -- <file>` |
+| E2E | `pnpm e2e` (Playwright, chromium-only; webServer builds + previews the playground) |
+| Build all | `pnpm -r build` (tsup for core · vite for admin/playground) |
+| Changeset | `pnpm changeset` (non-interactive sanity: `pnpm changeset status`) |
+| Supply-chain guards | `pnpm run scan:workflows` · `pnpm run scan:prod-purity` · `pnpm run audit:waivers` |
 
-Exact final wording + flags live in `01-spec.md §3` once P0 lands; phase files that need a not-yet-materialized command must say so, never guess.
+pnpm is pinned via the root `packageManager` field (corepack; 10.34.9). `.nvmrc` pins CI to 22; local Node only has to satisfy `engines` (≥22.12) — owner decision 2026-10-27, ADR-0010 §5 addendum.
 
 ## 7. Documentation rules
 

@@ -2,7 +2,7 @@
 
 > A git-backed, zero-database CMS: a framework-agnostic TypeScript core + a fully brandable React admin. Content stays as plain JSON files in your GitHub repository; the admin talks to `api.github.com` directly — **your token never leaves the browser, and there is no server to run.**
 
-<p align="center"><strong>STATUS: pre-scaffold (P0 not started)</strong> — this repo currently contains specifications only. See <code>AGENTS.md</code> for the operating manual and <code>docs/specs/</code> for the plan.</p>
+<p align="center"><strong>STATUS: P0 scaffold (in progress)</strong> — monorepo skeleton, CI, and the law-encoding seams are in and green locally (incl. clean-clone install); feature phases start after the P0 gate. See <code>AGENTS.md</code>.</p>
 
 ## Why
 
@@ -34,7 +34,19 @@ tasks/            plan.md + todo.md (live checklist)
 
 ## Quickstart
 
-Not yet materialized — created in P0. Until then, this repo is documentation-only by design.
+Requires Node ≥22.12 (CI pins 22 via `.nvmrc`) and pnpm (enabled via corepack, version-pinned by the root `packageManager` field):
+
+```
+corepack enable pnpm
+pnpm install --frozen-lockfile   # CI-parity install
+pnpm -r typecheck                # tsc over project references
+pnpm run check                   # biome — lint + format (errors on warnings)
+pnpm -r test                     # vitest workspaces (core has a coverage gate on)
+pnpm -r build                    # tsup (core) · vite build (admin, playground)
+pnpm e2e                         # Playwright chromium smoke vs the playground build
+```
+
+At P0, `packages/admin` is the React 19 shell (design tokens + login route) and `playground` is the MSW FakeGithub harness — editing surfaces land in P1+.
 
 ## License
 

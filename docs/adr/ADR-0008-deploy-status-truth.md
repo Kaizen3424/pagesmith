@@ -16,3 +16,5 @@ Cloudflare Workers Builds reports **GitHub check runs** (one per connected Worke
 
 ## Consequences
 Late-arriving failures may surface under a newer chip — resolved by per-commit keys + reveal-on-journal, accepted (TR3): "Live" = per-commit truth; the banner supplies whole-site truth.
+### P0 verification (2026-10-27)
+- `commitStatus` encoded as an exhaustive boolean capability, shape-checked by the contract suite (per-token opt-in truth source). The check-runs consumer lands P2.8. No deviation.
