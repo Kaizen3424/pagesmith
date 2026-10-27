@@ -8,3 +8,6 @@ export interface WebKeyValueStore {
   set(key: string, value: unknown): Promise<void>
   delete(key: string): Promise<void>
 }
+
+export type { IdbTokenStoreOptions } from "./token-stores"
+export { createIdbTokenStore, createSessionTokenStore } from "./token-stores"

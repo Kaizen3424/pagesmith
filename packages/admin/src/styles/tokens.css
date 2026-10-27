@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../";
 
 /*
  * Dark-luxury default design tokens (spec §7: CSS-var tokens; gold = accent only, ≥18px/semibold or 2px focus ring).

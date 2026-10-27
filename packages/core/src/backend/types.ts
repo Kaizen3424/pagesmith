@@ -19,6 +19,8 @@ export interface Ref {
 
 /** Tuple equality is `{sha, mode, type}` — mode/type-only foreign drift is never silently applied (INV-P06). */
 export interface TreeEntryTuple {
+  /** Repo-relative POSIX path (ADR-0005 P1 addendum). */
+  readonly path: string
   readonly sha: string
   readonly mode: string
   readonly type: string
@@ -30,6 +32,31 @@ export interface TreeRead {
   readonly truncated: boolean
   readonly entries: readonly TreeEntryTuple[]
 }
+
+/** File bytes read from the contents/git-blobs routes (never raw.githubusercontent). */
+export interface FileRead {
+  readonly path: string
+  readonly sha: string
+  readonly bytes: Uint8Array
+  readonly size: number
+}
+
+export interface ReadTreeOptions {
+  /** ETag from a previous read; backend sends If-None-Match and may return not-modified. */
+  readonly etag?: string
+}
+
+export interface ReadFileOptions {
+  readonly etag?: string
+}
+
+export type ReadTreeResult =
+  | { readonly kind: "tree"; readonly tree: TreeRead; readonly etag?: string }
+  | { readonly kind: "not-modified"; readonly etag?: string }
+
+export type ReadFileResult =
+  | { readonly kind: "file"; readonly file: FileRead; readonly etag?: string }
+  | { readonly kind: "not-modified"; readonly etag?: string }
 
 export interface FileWrite {
   readonly path: string
@@ -64,7 +91,18 @@ export interface GitBackendCapabilities {
 export interface GitBackend {
   readonly capabilities: GitBackendCapabilities
   getRef(branch: string): Promise<Ref>
-  listChangedFiles(baseSha: string, headSha: string): Promise<ReadonlyMap<string, TreeEntryTuple>>
+  readTree(branch: string, commitSha: string, options?: ReadTreeOptions): Promise<ReadTreeResult>
+  readFile(
+    branch: string,
+    path: string,
+    blobSha: string,
+    options?: ReadFileOptions,
+  ): Promise<ReadFileResult>
+  listChangedFiles(
+    branch: string,
+    baseSha: string,
+    headSha: string,
+  ): Promise<ReadonlyMap<string, TreeEntryTuple>>
   commitChanges(
     changes: CommitChangeSet,
     baseHeadSha: string,

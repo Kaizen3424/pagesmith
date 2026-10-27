@@ -1,0 +1,19 @@
+{
+  "number": "02",
+  "title": "Ode to Iris",
+  "subtitle": "Ocean tones, pearl light and sculptural felt",
+  "theme": "iris",
+  "image": "/images/collections/ode-to-iris.jpg",
+  "imageAlt": "Ode to Iris collection hero",
+  "heroObjectPosition": "center",
+  "indexObjectPosition": "center",
+  "heroKicker": "Maatwerk · Colour study",
+  "intro": "Ocean depth meets pearl light and gold detail in a collection inspired by the shifting colours of the iris.",
+  "mood": "Ode to Iris",
+  "paletteLabels": "Ocean · Sea blue · Pearl · Gold leaf",
+  "sectionTitle": "A colour world,",
+  "sectionTitleAccent": "made personal.",
+  "sectionBody": "Every piece begins with proportion, material and atmosphere. Our studio adjusts scale, finish and detailing so the object belongs naturally in its space.",
+  "ctaLabel": "Discuss your piece",
+  "featuredProducts": ["the-rock-pendant", "iris-no-7"]
+}

@@ -1,0 +1,42 @@
+{
+  "kicker": "Made in the Netherlands",
+  "titleLine1": "Matter, patience",
+  "titleLine2": "and the human hand.",
+  "image": "/images/site/ing-yve-craft.jpg",
+  "imageAlt": "ING & YVE leather piping stitched by hand",
+  "statValue": "99%",
+  "statTitle": "Dutch-sourced materials",
+  "statBody": "From wool felt and vegetable-tanned leather to clay and hardware, our material journey stays remarkably close to home.",
+  "features": [
+    {
+      "icon": "map-pin",
+      "title": "Close to home",
+      "text": "Shorter chains, known makers and materials selected at their source."
+    },
+    {
+      "icon": "recycle",
+      "title": "Circular by design",
+      "text": "Replaceable shades, repairable fittings and forms intended to endure."
+    },
+    {
+      "icon": "circle-dot",
+      "title": "A stitched signature",
+      "text": "Every leather edge is double stitched slowly, visibly and by hand."
+    },
+    {
+      "icon": "leaf",
+      "title": "Natural texture",
+      "text": "Wool felt, clay and wood bring depth without unnecessary finish."
+    }
+  ],
+  "ceramicKicker": "Ceramic foundations",
+  "ceramicTitleLine1": "No mould.",
+  "ceramicTitleLine2": "No repetition.",
+  "ceramicBody": "Our bases are built through a dialogue with clay. Finger marks, firing variation and the movement of glaze remain visible. What industry calls inconsistency, we recognize as life.",
+  "ceramicImage": "/images/site/ing-yve-collections.jpg",
+  "ceramicImageAlt": "Handmade ceramic lamp forms",
+  "seo": {
+    "title": "Our Craft",
+    "description": "Inside the Dutch atelier: local materials, ceramic forms, wool felt and our leather stitched signature."
+  }
+}

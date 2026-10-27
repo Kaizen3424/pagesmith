@@ -83,7 +83,7 @@ Property-tested invariants (rebase ×11, conflict predicate, serializer byte-ide
 See master-plan §3 (monorepo tree) — authoritative. Addenda locked here:
 
 - **Draft records** (core/drafts): key = `${repo}/${collection}/${slug}` for entry drafts; media tiles stored alongside per-entry (`${repo}/${collection}/${slug}/media/${n}`); settings docs keyed by file path. Draft store API = injected `DraftStore` interface (IDB impl in `core/web`), **Node-safe core** (no IDB import outside `core/web`).
-- **Composition root**: `createMyCMS({backend, storage, logger, clock, fetch})`; admin mount: `mountAdmin(el, {config, support:{name}})`. Fakes implement the same interfaces (backend impls must ALSO pass the shared contract suite — ADR-0001/0009).
+- **Composition root**: `createMyCMS({backend, storage, logger, clock, fetch})`; admin mount: `mountAdmin(el, {config, support:{name}, repository, fetch?, tokenStore?})`. The P1 host-wiring addendum (ADR-0001) makes the repository target and browser seams explicit; core still owns no concrete IDB/network implementation. Fakes implement the same interfaces (backend impls must ALSO pass the shared contract suite - ADR-0001/0009).
 - **Admin dual registry**: `core/fields` = pure `defineFieldType` (parse/serialize/validate/effect, no React/IO); `admin/widgets` = `defineWidget(fieldTypeName, Component)` joined **by name**; custom `WidgetProps{value, onChange, error, fieldConfig, useField(), services}` — never `backend`/token (standing veto). Exemplar custom widget: `packages/admin/src/widgets/reference-swatch/`; exemplar backend: `packages/core/src/backends/reference-fixture-backend/` (ADR-0009).
 
 ## 6. Boundaries

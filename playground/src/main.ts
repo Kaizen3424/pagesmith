@@ -1,32 +1,45 @@
-import { allowRealGithub, REAL_TARGET_BANNER, REAL_TARGET_ENV } from "./fake-github/env-guard"
+import { mountAdmin } from "@mycms/admin"
+import "@mycms/admin/styles.css"
+import { setupWorker } from "msw/browser"
+import { yveAdminConfig } from "./config/yve"
+import { loadFixtureRepoFromBrowser } from "./fake-github/browser-fixture-repo"
+import { createFakeGithubHandlers, DEFAULT_TAGS } from "./fake-github/handlers"
 
-/** Vite-injected env (types via vite/client; prefix configured in vite.config). */
-const viteEnv = import.meta.env as Record<string, string | boolean | undefined>
-const rawFlag = viteEnv[REAL_TARGET_ENV]
-const realTarget = allowRealGithub({
-  [REAL_TARGET_ENV]: typeof rawFlag === "string" ? rawFlag : undefined,
+/**
+ * Playground host — boots MSW FakeGithub, loads the shared fixture mirror, and
+ * mounts the real admin against it. No real network target is reachable here.
+ */
+async function main(): Promise<void> {
+  const snapshot = await loadFixtureRepoFromBrowser()
+  const worker = setupWorker(
+    ...createFakeGithubHandlers(snapshot, DEFAULT_TAGS, { requireAuth: true }),
+  )
+  await worker.start()
+
+  const host = document.getElementById("app")
+  if (host === null) {
+    const message = "playground host element missing"
+    throw new Error(message)
+  }
+
+  mountAdmin(host, {
+    config: yveAdminConfig,
+    support: { name: "Ing" },
+    repository: {
+      owner: DEFAULT_TAGS.owner,
+      repo: DEFAULT_TAGS.repo,
+      branch: snapshot.defaultBranch,
+    },
+  })
+}
+
+void main().catch((error: unknown) => {
+  const host = document.getElementById("app")
+  if (host === null) return
+  const message = error instanceof Error ? error.message : "The playground could not start."
+  const heading = document.createElement("h1")
+  heading.textContent = "The playground could not start"
+  const detail = document.createElement("p")
+  detail.textContent = message
+  host.replaceChildren(heading, detail)
 })
-
-/** Static harness shell — repo content NEVER renders through markup sinks (ADR-0006). */
-const app = document.getElementById("app")
-if (app === null) {
-  const message = "playground host element missing"
-  throw new Error(message)
-}
-
-const heading = document.createElement("h1")
-heading.textContent = "MyCMS playground"
-
-const subtitle = document.createElement("p")
-subtitle.textContent =
-  "FakeGithub harness (MSW) — contract-suite target. Real GitHub disabled unless MYCMS_ALLOW_REAL_GITHUB=1."
-
-const target = document.createElement(realTarget ? "p" : "span")
-if (realTarget) {
-  target.textContent = REAL_TARGET_BANNER
-}
-if (!realTarget) {
-  target.textContent = "target: fixture repo (offline)"
-}
-
-app.append(heading, subtitle, target)

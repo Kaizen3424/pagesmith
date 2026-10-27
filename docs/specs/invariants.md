@@ -17,22 +17,22 @@ Save pipeline & concurrency:
 - [ ] INV-P11 · L1 · Parked-tx resume: 429+Retry-After mid-chunk → drafts present in IDB **before first network call**, countdown park, resumes w/o loss/duplicate — `inv-parked-tx.test.ts`
 - [ ] INV-P12 · L2 · Crash-recovery replay: kill tab mid-commit → boot replays drafts (equal→discard / canon-diff→offer / drift→conflict); draft deleted ONLY post-ref-verify — e2e `kill-tab.spec.ts`
 - [ ] INV-P13 · L1 · Lease: BroadcastChannel save-lock w/ TTL + heartbeat + silent steal (storage-event fallback); payloads never carry sensitive data — `inv-save-lease.test.ts`
-- [ ] INV-P14 · L1 · Branch param: zero `main` literals in backend/pipeline (lint fixture); branch names URL-encoded incl. `+` — `inv-branch-param.test.ts`
+- [x] INV-P14 · L1 · Branch param: zero `main` literals in backend/pipeline (lint fixture); branch names URL-encoded incl. `+` — `inv-branch-param.test.ts` (green 2026-10-27)
 
 Serialization & parse:
 
-- [ ] INV-S01 · L0 · Untouched-file byte identity: `serialize(parse(raw)) === raw` on all yve fixtures — `core/src/cache/__tests__/golden-byte-identity.test.ts`
-- [ ] INV-S02 · L0/L1 · No-op saves emit zero-diff commits (tree-sha equality); CRLF/ETag variants don't false-change — `inv-noop-diff.test.ts` (**P1 scope:** serializer byte identity, CRLF canon, `listChangedFiles(base,base)=∅`; **P2 C.1 scope:** zero-diff commit assertion — owner-approved split 2026-10-27)
-- [ ] INV-S03 · L0 · Lenient-read/strict-save: all 6 yve drift fixtures render w/ banner; save refuses unclean; untouched patch preserves unmodeled keys verbatim — `inv-lenient-strict.test.ts`
-- [ ] INV-S04 · L0 · Default-immunity: parse never injects hidden defaults (no key creation); defaults only via new-entry/template leaf-fold — `inv-default-immune.test.ts`
-- [ ] INV-S05 · L0 · Prototype pollution: `{"__proto__":…}` + nested `constructor.prototype` fixtures; `parseUntrustedJson` only; repo-wide ban on unsafe merges (grep-gated) — `inv-prototype-pollution.test.ts`
-- [ ] INV-S06 · L0 · Size/depth caps: entry ≤2MB, depth ≤64, list ≤5k items, render recursion guard — `inv-parse-caps.test.ts`
+- [x] INV-S01 · L0 · Untouched-file byte identity: `serialize(parse(raw)) === raw` on all yve fixtures — `core/src/cache/__tests__/golden-byte-identity.test.ts` (green 2026-10-27, all 14 content files, SHA-256 pinned)
+- [x] INV-S02 · L0/L1 · No-op saves emit zero-diff commits (tree-sha equality); CRLF/ETag variants don't false-change — `inv-noop-diff.test.ts` (**P1 scope green 2026-10-27:** serializer byte identity, CRLF canon, `listChangedFiles(base,base)=∅`; **P2 C.1 scope:** zero-diff commit assertion — owner-approved split 2026-10-27)
+- [x] INV-S03 · L0 · Lenient-read/strict-save: all 6 yve drift fixtures render w/ banner; save refuses unclean; untouched patch preserves unmodeled keys verbatim — `inv-lenient-strict.test.ts` (green 2026-10-27; strengthened by `playground/src/config/__tests__/yve-config.test.ts` on the actual 6 fixtures + e2e banner assertions for all 6)
+- [x] INV-S04 · L0 · Default-immunity: parse never injects hidden defaults (no key creation); defaults only via new-entry/template leaf-fold — `inv-default-immune.test.ts` (green 2026-10-27)
+- [x] INV-S05 · L0 · Prototype pollution: `{"__proto__":…}` + nested `constructor.prototype` fixtures; `parseUntrustedJson` only; repo-wide ban on unsafe merges (grep-gated) — `inv-prototype-pollution.test.ts` (green 2026-10-27; grep gate = `repo-bans.test.ts`, green)
+- [x] INV-S06 · L0 · Size/depth caps: entry ≤2MB, depth ≤64, list ≤5k items, render recursion guard — `inv-parse-caps.test.ts` (green 2026-10-27)
 
 Content trust & XSS:
 
-- [ ] INV-T01 · L0 · Templates render as text nodes ONLY (mustache-lite); golden XSS suite over summaries, preview_path, alt, group patterns — `core/src/safety/__tests__/inv-golden-xss.test.ts`
-- [ ] INV-T02 · L1 · `safePath()` on read AND write: rejects `..`, backslashes, encoded slashes, prefix escapes — `inv-safe-path.test.ts`
-- [ ] INV-T03 · L0 · `safeUrl()`: scheme allowlist; rendered `target=_blank rel=noopener noreferrer`; `javascript:`/`data:` URLs rejected — `inv-safe-url.test.ts`
+- [x] INV-T01 · L0 · Templates render as text nodes ONLY (mustache-lite); golden XSS suite over summaries, preview_path, alt, group patterns — `core/src/safety/__tests__/inv-golden-xss.test.ts` (green 2026-10-27)
+- [x] INV-T02 · L1 · `safePath()` on read AND write: rejects `..`, backslashes, encoded slashes, prefix escapes — `inv-safe-path.test.ts` (green 2026-10-27; image-src guard reuses it)
+- [x] INV-T03 · L0 · `safeUrl()`: scheme allowlist; rendered `target=_blank rel=noopener noreferrer`; `javascript:`/`data:` URLs rejected — `inv-safe-url.test.ts` (green 2026-10-27)
 - [ ] INV-T04 · L2 · SVG: uploads rejected; existing SVG render via `<img src=blob:>` only; zero inline `<svg>` of repo files — e2e `svg-trust.spec.ts`
 - [ ] INV-T05 · L0 · EXIF strip by construction (re-encode) + orientation preserved; upload pre-caps (≤15MB, natural dims pre-check, ~400KB target) — `inv-upload-caps.test.ts`
 
@@ -40,14 +40,14 @@ Token & auth lifecycle:
 
 - [ ] INV-A01 · L2 · 401 mid-batch: queue discarded, token wiped, drafts retained, inline re-auth sheet, probe re-run before resume — e2e `token-death.spec.ts`
 - [ ] INV-A02 · L1 · Classifier matrix: 404/403/401/422 (+body strings) → named guided screens; founder surfaces never show GitHub prose — `inv-error-taxonomy.test.ts`
-- [ ] INV-A03 · L1 · Capability probe: login‑time probe (rate_limit/repo/protection-admin/checks) + re-probe on 401/403/422-after-write; probe never cached persistently; no requests inside quota-blocked windows — `inv-probe.test.ts`
+- [x] INV-A03 · L1 · Capability probe: login‑time probe (rate_limit/repo/protection-admin/checks) + re-probe on 401/403/422-after-write; probe never cached persistently; no requests inside quota-blocked windows — `inv-probe.test.ts` (**P1 partial green 2026-10-27:** login-time probe + teardown/re-probe semantics; 401/403/422-**after-write** re-probe + quota-window block land with the P2 write path)
 - [ ] INV-A04 · L0 · Token never in URL/query; only accessible via AuthProvider; wipe on sign-out/failed-bootstrap/401 — `inv-token-hygiene.test.ts`
 - [ ] INV-A05 · L0 · Log masking: authorization/token/secret/x-github-* keys + `github_pat_…`/`ghp_…`/email value-regex masked; ring buffer memory-only — `inv-log-masking.test.ts`
 
 Network & rate:
 
 - [ ] INV-N01 · L1 · Throttling/concurrency ≤5; `Retry-After`/`X-RateLimit-Reset` honored; primary exhaustion = reset countdown UI, event-driven resume — `inv-rate-policy.test.ts`
-- [ ] INV-N02 · L1 · Tree reads assert `!truncated`; truncated → subtree-walk fallback; contents-dir 1000-cap unused for correctness — `inv-truncation.test.ts`
+- [x] INV-N02 · L1 · Tree reads assert `!truncated`; truncated → subtree-walk fallback; contents-dir 1000-cap unused for correctness — `inv-truncation.test.ts` (green 2026-10-27)
 - [ ] INV-N03 · L2 · Preview path: zero `raw.githubusercontent.com` traffic (blob-API, sha-keyed, overwrite invalidates instantly) — e2e origin allowlist assertion
 - [ ] INV-N04 · L2 · Prod purity: no `.map`, no `sourceMappingURL`, no `mockServiceWorker` bytes, no telemetry strings — CI byte-scan
 - [ ] INV-N05 · L2 · Origins: catch-all route aborts anything outside `self`/`api.github.com`/`blob:`/`data:` — e2e `origin-allowlist.spec.ts`

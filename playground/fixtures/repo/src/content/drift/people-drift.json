@@ -1,0 +1,19 @@
+{
+  "title": "Drift — empty people",
+  "price": 1650,
+  "category": "Table Lamps",
+  "people": [],
+  "contact": {
+    "email": "atelier@ingandyve.nl",
+    "phone": "+31 (0)6 12 34 56 78"
+  },
+  "featured": "iris-no-7",
+  "images": [
+    {
+      "image": "/images/products/iris-no-7-1.jpg",
+      "alt": "Iris No. 7 sculptural lamp",
+      "objectPosition": "center"
+    }
+  ],
+  "materialFilter": "Ceramics"
+}

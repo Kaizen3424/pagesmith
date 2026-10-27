@@ -1,0 +1,24 @@
+{
+  "title": "Drift — missing relation",
+  "price": 1650,
+  "category": "Table Lamps",
+  "people": [
+    {
+      "name": "Ing",
+      "bio": "Hat maker and lampshade designer."
+    }
+  ],
+  "contact": {
+    "email": "atelier@ingandyve.nl",
+    "phone": "+31 (0)6 12 34 56 78"
+  },
+  "featured": "missing-product",
+  "images": [
+    {
+      "image": "/images/products/iris-no-7-1.jpg",
+      "alt": "Iris No. 7 sculptural lamp",
+      "objectPosition": "center"
+    }
+  ],
+  "materialFilter": "Ceramics"
+}

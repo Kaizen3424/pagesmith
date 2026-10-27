@@ -1,0 +1,39 @@
+{
+  "kicker": "Two disciplines · one language",
+  "titleLine1": "A shared instinct",
+  "titleLine2": "for shape and soul.",
+  "image": "/images/site/ing-yve-founders.jpg",
+  "imageAlt": "Founders Ing and Yve in their Dutch atelier",
+  "quoteKicker": "Ing & Yve",
+  "quote": "“We make objects we would want to live with—expressive enough to hold a room, quiet enough to become part of your life.”",
+  "people": [
+    {
+      "name": "Ing",
+      "bio": "Hat maker and lampshade designer. Ing brings architectural proportion, textile knowledge and a meticulous eye for finishing."
+    },
+    {
+      "name": "Yve",
+      "bio": "Couture designer trained at Vivienne Westwood and ceramic artist. Yve shapes each base with instinctive, expressive movement."
+    }
+  ],
+  "enquiryKicker": "Private enquiries",
+  "enquiryTitleLine1": "Let’s create",
+  "enquiryTitleLine2": "something lasting.",
+  "enquiryBody": "For bespoke commissions, interior projects, trade enquiries or an atelier visit, tell us a little about what you have in mind.",
+  "form": {
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@studio.com",
+    "roleLabel": "I am enquiring as",
+    "roles": ["Private client", "Interior professional", "Press / collaboration"],
+    "ideaLabel": "Your idea",
+    "ideaPlaceholder": "Tell us about the space, object or memory...",
+    "submitLabel": "Send enquiry",
+    "sentLabel": "Message received"
+  },
+  "seo": {
+    "title": "About & Contact",
+    "description": "Meet Ing and Yve, the designers behind ING & YVE, and request a bespoke consultation."
+  }
+}

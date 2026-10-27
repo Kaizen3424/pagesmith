@@ -1,0 +1,69 @@
+{
+  "title": "Karst No. 2",
+  "kicker": "Light Natural · No. 2",
+  "displayName": "Karst",
+  "material": "Friesian clay · Oak",
+  "price": 1195,
+  "pricePrefix": "",
+  "category": "Table Lamps",
+  "materialFilter": "Wood",
+  "description": "Friesian clay shaped into a softly eroded column, paired with turned oak and a linen shade. Named for the landscape that forms it.",
+  "images": [
+    {
+      "image": "/images/products/karst-no-2-1.jpg",
+      "alt": "Karst No. 2 table lamp",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/karst-no-2-2.jpg",
+      "alt": "Detail of the Friesian clay body",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/karst-no-2-3.jpg",
+      "alt": "Karst No. 2 in the Light Natural collection",
+      "objectPosition": "center"
+    }
+  ],
+  "specs": [
+    { "label": "Dimensions", "value": "Ø 44 × H 66 cm" },
+    { "label": "Materials", "value": "Friesian clay, oak, linen" },
+    { "label": "Lead time", "value": "6–8 weeks" }
+  ],
+  "options": [
+    {
+      "name": "Shade",
+      "values": [
+        { "label": "Pearl linen", "swatch": "muted" },
+        { "label": "Warm felt", "swatch": "accent" },
+        { "label": "Moss wool", "swatch": "accent" }
+      ]
+    },
+    {
+      "name": "Piping",
+      "values": [
+        { "label": "Natural", "swatch": "muted" },
+        { "label": "Cognac", "swatch": "accent" },
+        { "label": "Ink", "swatch": "secondary" }
+      ]
+    },
+    {
+      "name": "Base",
+      "values": [
+        { "label": "Oak", "swatch": "accent" },
+        { "label": "Chalk", "swatch": "muted" },
+        { "label": "Charcoal", "swatch": "secondary" }
+      ]
+    }
+  ],
+  "accordions": [
+    {
+      "title": "Craftsmanship",
+      "body": "The clay body is hand-built and left with the marks of the making. The oak base is turned and oiled, not lacquered."
+    },
+    {
+      "title": "Origin & materials",
+      "body": "Friesian clay, Dutch oak, linen and vegetable-tanned leather. Finished with a natural oil."
+    }
+  ]
+}

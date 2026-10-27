@@ -1,8 +1,31 @@
 {
-  "$comment": "DEMO settings doc — placeholder.",
+  "brand": {
+    "first": "ING",
+    "conjunction": "&",
+    "second": "YVE",
+    "subtitle": "Sculptural Lighting"
+  },
+  "nav": [
+    { "label": "Maatwerk", "to": "/bespoke" },
+    { "label": "Collections", "to": "/collections" },
+    { "label": "Our Craft", "to": "/our-craft" },
+    { "label": "About · Contact", "to": "/about" }
+  ],
+  "footer": {
+    "tagline": "Sculptural lighting and handcrafted design objects, made slowly in the Netherlands.",
+    "exploreLabel": "Explore",
+    "discoverLabel": "Also discover",
+    "discover": [
+      { "label": "KLEInlicht — voor een warme herinnering", "href": "https://kleinlicht.nl" },
+      { "label": "Yvette Pen — Ceramic Art", "href": "https://yvettepen.com" }
+    ],
+    "copyright": "© 2026 ING & YVE · The Netherlands",
+    "legalLabel": "Privacy · Shipping · Terms",
+    "homeStrip": ["Handcrafted in the Netherlands", "© 2026 ING & YVE", "Made slowly"]
+  },
   "contact": {
-    "email": "demo@studio.example",
-    "phone": "0000000000",
-    "locationLines": ["Somewhere 1"]
+    "email": "atelier@ingandyve.nl",
+    "phone": "+31 (0)6 12 34 56 78",
+    "locationLines": ["Atelier visits by appointment", "The Netherlands"]
   }
 }

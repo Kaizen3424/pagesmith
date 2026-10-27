@@ -1,9 +1,12 @@
+import type { AdminConfig } from "@mycms/core"
+import { CONFIG_SCHEMA_VERSION } from "@mycms/core"
 import { mountAdmin } from "./admin/mount"
 import "./styles/tokens.css"
 
 /**
- * Entry. Real config/support values arrive with the host app at P1/P6; the
- * shell mounts against placeholder values until then (demo purposes only).
+ * Standalone admin dev entry. A real host supplies its generated config and
+ * repository target (playground does this in P1; yve does it at P6). This file
+ * stays deliberately empty so no fixture data leaks into the shipped shell.
  */
 const rootEl = document.getElementById("root")
 if (rootEl === null) {
@@ -11,7 +14,18 @@ if (rootEl === null) {
   throw new Error(message)
 }
 
+const emptyConfig: AdminConfig = {
+  schemaVersion: CONFIG_SCHEMA_VERSION,
+  media: { folder: "public/images", publicFolder: "/images" },
+  collections: [],
+}
+
 mountAdmin(rootEl, {
-  config: { schemaVersion: 1, collections: [] },
-  support: { name: "Milan" },
+  config: emptyConfig,
+  support: { name: "Ing" },
+  repository: {
+    owner: "your-github-name",
+    repo: "your-site-content",
+    branch: "your-branch",
+  },
 })

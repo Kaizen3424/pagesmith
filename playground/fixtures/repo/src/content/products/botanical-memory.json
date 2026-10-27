@@ -1,0 +1,69 @@
+{
+  "title": "Botanical Memory",
+  "kicker": "Maatwerk · Personal textile",
+  "displayName": "Botanical Memory",
+  "material": "Personal textile · Oak",
+  "price": 745,
+  "pricePrefix": "From ",
+  "category": "Custom",
+  "materialFilter": "Wood",
+  "description": "A made-to-measure shade that carries a personal textile — a wedding dress, a grandmother's tablecloth, a favourite scarf — set against turned oak.",
+  "images": [
+    {
+      "image": "/images/products/botanical-memory-1.jpg",
+      "alt": "Botanical Memory bespoke shade",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/botanical-memory-2.jpg",
+      "alt": "Personal textile detail in the shade",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/botanical-memory-3.jpg",
+      "alt": "Botanical Memory lamp in an interior",
+      "objectPosition": "center"
+    }
+  ],
+  "specs": [
+    { "label": "Dimensions", "value": "Made to measure" },
+    { "label": "Materials", "value": "Client textile, oak, brass" },
+    { "label": "Lead time", "value": "8–10 weeks" }
+  ],
+  "options": [
+    {
+      "name": "Shape",
+      "values": [
+        { "label": "Round", "swatch": "muted" },
+        { "label": "Oval", "swatch": "accent" },
+        { "label": "Drum", "swatch": "secondary" }
+      ]
+    },
+    {
+      "name": "Piping",
+      "values": [
+        { "label": "Cognac", "swatch": "accent" },
+        { "label": "Ink", "swatch": "secondary" },
+        { "label": "Natural", "swatch": "muted" }
+      ]
+    },
+    {
+      "name": "Base",
+      "values": [
+        { "label": "Oak", "swatch": "accent" },
+        { "label": "Chalk", "swatch": "muted" },
+        { "label": "Charcoal", "swatch": "secondary" }
+      ]
+    }
+  ],
+  "accordions": [
+    {
+      "title": "Craftsmanship",
+      "body": "We begin with a conversation about the textile and the room. The shade is then built by hand around your material, with a linen backing for a warm, even light."
+    },
+    {
+      "title": "Origin & materials",
+      "body": "Your own textile, paired with Dutch oak, vegetable-tanned leather and brass fittings. Every commission includes a digital proof before production."
+    }
+  ]
+}

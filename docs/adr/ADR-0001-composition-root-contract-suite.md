@@ -19,4 +19,8 @@ Core must stay framework-agnostic and test-unaware, yet admin/fakes/real backend
 Framework-coupled core (loses Stage-B portability); separate test doubles per backend (drift risk — exactly what round-1 flagged).
 ### P0 verification (2026-10-27)
 - Implemented as written in code: single composition root `createMyCMS(deps)` (frozen deps, core stays node-safe) + `defineContractSuite`/`runContractSuite` runner + `SHAPE_CHECK` + the `FixtureBackend` exemplar stub passing the same suite (packages/core/src).
-- The echo test executes the full public module graph (packages/core/src/__tests__/echo.test.ts). Signed off by the P0 agent session under the owner-approved 12-slice plan — no deviation.
+- The echo test executes the full public module graph (packages/core/src/__tests__/echo.test.ts). Signed off by the P0 agent session under the owner-approved 12-slice plan - no deviation.
+
+### P1 host-wiring addendum (2026-10-27)
+- P1 admin mount is `mountAdmin(el, {config, support:{name}, repository:{owner, repo, branch, baseUrl?}, fetch?, tokenStore?})`. The browser host is the P1 composition point: it constructs `GithubBackend` + `PatProvider` behind the same seams; core still imports no concrete browser/network implementation. `createMyCMS` remains the core composition root.
+- `branch` is data on every call (INV-P14); `baseUrl` exists only for fixtures/proxies. The playground passes the FakeGithub fetch through this option, not by patching globals.

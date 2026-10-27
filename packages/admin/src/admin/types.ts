@@ -1,11 +1,26 @@
-/** P0 placeholder admin config shape — replaced by the real config package types in P1. */
-
-export interface AdminConfigPlaceholder {
-  readonly schemaVersion: number
-  readonly collections: readonly unknown[]
-}
+/** Admin composition types — host supplies JSON-safe config + repository target. */
+import type { AdminConfig, FetchLike, TokenStore } from "@mycms/core"
 
 export interface SupportContext {
   /** The named human every founder-facing surface references — never "someone" (master-plan §7). */
   readonly name: string
+}
+
+/** Repository target for the git-backed read/write transport. Branch is always data. */
+export interface AdminRepository {
+  readonly owner: string
+  readonly repo: string
+  readonly branch: string
+  /** API origin override for fixtures/proxies; defaults to https://api.github.com. */
+  readonly baseUrl?: string
+}
+
+export interface AdminMountOptions {
+  readonly config: AdminConfig
+  readonly support: SupportContext
+  readonly repository: AdminRepository
+  /** Injectable transport (MSW tests / host fetch). Defaults to globalThis.fetch. */
+  readonly fetch?: FetchLike
+  /** Injectable token store (tests / per-device fallback). Defaults to the opt-in IDB store. */
+  readonly tokenStore?: TokenStore
 }

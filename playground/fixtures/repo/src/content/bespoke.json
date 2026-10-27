@@ -1,0 +1,60 @@
+{
+  "kicker": "Bespoke studio",
+  "titleLine1": "Your story,",
+  "titleLine2": "shaped by light.",
+  "intro": "Build a personal shade in four considered steps. Every design is reviewed and refined by our studio before production.",
+  "image": "/images/site/ing-yve-collections.jpg",
+  "imageAlt": "Bespoke lampshade preview",
+  "steps": {
+    "shape": {
+      "number": "01",
+      "title": "Shape & scale",
+      "shapeLabel": "Shape",
+      "diameterLabel": "Diameter"
+    },
+    "image": {
+      "number": "02",
+      "title": "Your image",
+      "uploadTitle": "Drop your image here",
+      "uploadHint": "JPG, PNG or TIFF · maximum 20MB",
+      "verifiedTitle": "High resolution verified",
+      "verifiedHint": "Click to choose another image"
+    },
+    "finish": {
+      "number": "03",
+      "title": "Finish & piping",
+      "finishLabel": "Exterior",
+      "pipingLabel": "Leather piping"
+    },
+    "composition": {
+      "number": "04",
+      "title": "Your composition",
+      "formLabel": "Form",
+      "finishSummaryLabel": "Finish",
+      "priceLabel": "Estimated price",
+      "note": "Je ontvangt altijd eerst een digitale proef ter goedkeuring per e-mail/WhatsApp vóór start productie.",
+      "addLabel": "Voeg toe aan winkelmand",
+      "addedLabel": "Toegevoegd"
+    }
+  },
+  "shapes": ["Round", "Oval"],
+  "diameters": [
+    { "value": 20, "surcharge": 0 },
+    { "value": 30, "surcharge": 150 },
+    { "value": 50, "surcharge": 400 }
+  ],
+  "finishes": [
+    { "label": "Pearl linen", "surcharge": 0 },
+    { "label": "Wool felt", "surcharge": 0 },
+    { "label": "Silk", "surcharge": 85 }
+  ],
+  "piping": ["Cognac", "Natural", "Ink"],
+  "basePrice": 495,
+  "backLabel": "Back",
+  "continueLabel": "Continue",
+  "previewLabel": "Live composition preview",
+  "seo": {
+    "title": "Bespoke Studio",
+    "description": "Create a personal handcrafted lampshade with your photograph, artwork or textile."
+  }
+}

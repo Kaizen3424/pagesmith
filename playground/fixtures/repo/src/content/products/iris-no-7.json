@@ -1,0 +1,69 @@
+{
+  "title": "Iris No. 7",
+  "kicker": "Ode to Iris · No. 7",
+  "displayName": "Iris No. 7",
+  "material": "Sea glaze · Wool felt",
+  "price": 1650,
+  "pricePrefix": "",
+  "category": "Table Lamps",
+  "materialFilter": "Felt",
+  "description": "The deepest of the Iris glazes, pooled over a broad ceramic base and topped with a sculptural felt shade. A piece that holds a corner of the room.",
+  "images": [
+    {
+      "image": "/images/products/iris-no-7-1.jpg",
+      "alt": "Iris No. 7 sculptural lamp",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/iris-no-7-2.jpg",
+      "alt": "Sea glaze detail on the Iris base",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/iris-no-7-3.jpg",
+      "alt": "Iris No. 7 in an interior",
+      "objectPosition": "center"
+    }
+  ],
+  "specs": [
+    { "label": "Dimensions", "value": "Ø 58 × H 74 cm" },
+    { "label": "Materials", "value": "Glazed ceramic, wool felt, leather" },
+    { "label": "Lead time", "value": "6–8 weeks" }
+  ],
+  "options": [
+    {
+      "name": "Shade",
+      "values": [
+        { "label": "Warm felt", "swatch": "accent" },
+        { "label": "Pearl linen", "swatch": "muted" },
+        { "label": "Ocean felt", "swatch": "secondary" }
+      ]
+    },
+    {
+      "name": "Piping",
+      "values": [
+        { "label": "Cognac", "swatch": "accent" },
+        { "label": "Ink", "swatch": "secondary" },
+        { "label": "Natural", "swatch": "muted" }
+      ]
+    },
+    {
+      "name": "Base",
+      "values": [
+        { "label": "Sea glaze", "swatch": "secondary" },
+        { "label": "Chalk", "swatch": "muted" },
+        { "label": "Charcoal", "swatch": "accent" }
+      ]
+    }
+  ],
+  "accordions": [
+    {
+      "title": "Craftsmanship",
+      "body": "The base is built by hand and fired twice so the sea glaze can pool and break over the surface. The felt shade is cut, formed and stitched in the atelier."
+    },
+    {
+      "title": "Origin & materials",
+      "body": "Dutch clay, wool felt, vegetable-tanned leather and solid brass. Made in small numbered editions."
+    }
+  ]
+}

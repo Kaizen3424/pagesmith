@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { FixtureBackend } from "../../backends/reference-fixture-backend"
+import { FixtureBackend, textFixtureFile } from "../../backends/reference-fixture-backend"
+import { encodeUtf8 } from "../../safety/encoding"
 import {
   CORE_CONTRACT_SUITE,
   defineContractSuite,
@@ -8,12 +9,29 @@ import {
 } from "../contract-suite"
 import type { GitBackend } from "../types"
 
+const HEAD = "2a".repeat(20)
+const FILE_SHA = "b1".repeat(20)
+const FILE_TEXT = '{\n  "title": "fixture"\n}\n'
+
+function fixtureBackend(): FixtureBackend {
+  return new FixtureBackend({
+    headSha: HEAD,
+    treeSha: "c0".repeat(20),
+    etag: '"tree-etag"',
+    files: new Map([
+      ["src/content/site.json", textFixtureFile(FILE_TEXT, FILE_SHA, '"file-etag"')],
+    ]),
+  })
+}
+
 describe("contract suite runner (ADR-0001: one suite for every backend)", () => {
-  it("reference-fixture-backend passes the shape check", async () => {
-    const backend = new FixtureBackend({ headSha: "2a".repeat(20) })
-    const report = await runContractSuite(backend, CORE_CONTRACT_SUITE)
+  it("reference-fixture-backend passes the full read-side suite", async () => {
+    const report = await runContractSuite(fixtureBackend(), CORE_CONTRACT_SUITE, {
+      expectedPaths: ["src/content/site.json"],
+      expectedFileBytes: encodeUtf8(FILE_TEXT),
+    })
     expect(report.ok).toBe(true)
-    expect(report.passed).toBe(1)
+    expect(report.passed).toBe(CORE_CONTRACT_SUITE.checks.length)
     expect(report.failures).toEqual([])
   })
 
@@ -26,8 +44,8 @@ describe("contract suite runner (ADR-0001: one suite for every backend)", () => 
     } as unknown as GitBackend
     const report = await runContractSuite(bad, CORE_CONTRACT_SUITE)
     expect(report.ok).toBe(false)
-    expect(report.failures).toHaveLength(1)
     expect(report.failures[0]?.name).toBe(SHAPE_CHECK.name)
+    expect(report.failures.some((failure) => failure.name === SHAPE_CHECK.name)).toBe(true)
   })
 
   it("supports bespoke suites; custom checks run in order", async () => {

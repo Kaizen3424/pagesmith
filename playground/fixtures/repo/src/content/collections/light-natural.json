@@ -1,0 +1,19 @@
+{
+  "number": "01",
+  "title": "Light Natural",
+  "subtitle": "Linen, warm stone and quiet natural texture",
+  "theme": "natural",
+  "image": "/images/collections/light-natural.jpg",
+  "imageAlt": "Light Natural collection hero",
+  "heroObjectPosition": "left center",
+  "indexObjectPosition": "left center",
+  "heroKicker": "Maatwerk · Colour study",
+  "intro": "A quiet study in linen, warm stone and softly weathered tones, shaped for calm interiors.",
+  "mood": "Light Natural",
+  "paletteLabels": "Linen · Greige · Warm taupe · Off-white",
+  "sectionTitle": "A colour world,",
+  "sectionTitleAccent": "made personal.",
+  "sectionBody": "Every piece begins with proportion, material and atmosphere. Our studio adjusts scale, finish and detailing so the object belongs naturally in its space.",
+  "ctaLabel": "Discuss your piece",
+  "featuredProducts": ["the-rock-no-1", "karst-no-2"]
+}

@@ -1,0 +1,69 @@
+{
+  "title": "The Rock Pendant",
+  "kicker": "The Rock collection · Pendant",
+  "displayName": "The Rock Pendant",
+  "material": "Wool felt · Leather",
+  "price": 895,
+  "pricePrefix": "",
+  "category": "Pendant Lights",
+  "materialFilter": "Felt",
+  "description": "A generous felt shade suspended on a hand-stitched leather cord. Soft in presence, precise in silhouette, it settles a room from above.",
+  "images": [
+    {
+      "image": "/images/products/the-rock-pendant-1.jpg",
+      "alt": "The Rock pendant light",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/the-rock-pendant-2.jpg",
+      "alt": "Detail of the stitched leather suspension",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/the-rock-pendant-3.jpg",
+      "alt": "The Rock pendant above a table",
+      "objectPosition": "center"
+    }
+  ],
+  "specs": [
+    { "label": "Dimensions", "value": "Ø 60 × H 34 cm" },
+    { "label": "Materials", "value": "Wool felt, leather, brass" },
+    { "label": "Lead time", "value": "4–6 weeks" }
+  ],
+  "options": [
+    {
+      "name": "Shade",
+      "values": [
+        { "label": "Moss wool", "swatch": "accent" },
+        { "label": "Warm felt", "swatch": "accent" },
+        { "label": "Pearl linen", "swatch": "muted" }
+      ]
+    },
+    {
+      "name": "Cord",
+      "values": [
+        { "label": "Cognac", "swatch": "accent" },
+        { "label": "Ink", "swatch": "secondary" },
+        { "label": "Natural", "swatch": "muted" }
+      ]
+    },
+    {
+      "name": "Fitting",
+      "values": [
+        { "label": "Brass", "swatch": "accent" },
+        { "label": "Chalk", "swatch": "muted" },
+        { "label": "Ocean", "swatch": "secondary" }
+      ]
+    }
+  ],
+  "accordions": [
+    {
+      "title": "Craftsmanship",
+      "body": "The shade is formed over a wooden mould and hand-finished. The leather suspension is cut and stitched in the atelier."
+    },
+    {
+      "title": "Origin & materials",
+      "body": "Made from 99% Dutch-sourced wool felt, vegetable-tanned leather and solid brass hardware."
+    }
+  ]
+}

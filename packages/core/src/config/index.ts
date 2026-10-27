@@ -1,6 +1,40 @@
 /**
- * Config DSL — ADR-0003 (zod-first: schema factories carrying metadata;
- * closed config schema; lenient read/strict save). Module lands P1.1;
- * P0 pins the schema-version constant only.
+ * Config module barrel — ADR-0003. Host apps build a ConfigDefinition with
+ * zod schemas; the admin consumes only the strict JSON-safe AdminConfig.
  */
-export const CONFIG_SCHEMA_VERSION = 1
+export {
+  collectionDivider,
+  defineCollection,
+  defineConfig,
+  defineFile,
+  defineFiles,
+  toAdminConfig,
+} from "./document"
+export type { ConfigIssue } from "./schema"
+export {
+  ConfigValidationError,
+  fieldDescriptorSchema,
+  parseAdminConfig,
+  safeParseAdminConfig,
+} from "./schema"
+export type {
+  AdminConfig,
+  CollectionDefinition,
+  CollectionDescriptor,
+  CollectionDivider,
+  CollectionDividerDescriptor,
+  ConfigDefinition,
+  ConfigOptions,
+  FileDefinition,
+  FileDescriptor,
+  FileOptions,
+  FilesCollectionDefinition,
+  FilesCollectionDescriptor,
+  FilesCollectionOptions,
+  FolderCollectionDefinition,
+  FolderCollectionDescriptor,
+  FolderCollectionOptions,
+  MediaFolders,
+  ViewGroup,
+} from "./types"
+export { CONFIG_SCHEMA_VERSION } from "./version"

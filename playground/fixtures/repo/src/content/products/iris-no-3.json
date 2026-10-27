@@ -1,0 +1,69 @@
+{
+  "title": "Iris No. 3",
+  "kicker": "Ode to Iris · No. 3",
+  "displayName": "Iris",
+  "material": "Glazed ceramic · Silk",
+  "price": 1475,
+  "pricePrefix": "",
+  "category": "Table Lamps",
+  "materialFilter": "Ceramics",
+  "description": "A sculpted glazed base carrying a silk shade with a pearl sheen. The glaze is mixed in the studio and shifts with the light through the day.",
+  "images": [
+    {
+      "image": "/images/products/iris-no-3-1.jpg",
+      "alt": "Iris No. 3 table lamp",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/iris-no-3-2.jpg",
+      "alt": "Detail of the Iris glaze and silk shade",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/iris-no-3-3.jpg",
+      "alt": "Iris No. 3 in the Ode to Iris collection",
+      "objectPosition": "center"
+    }
+  ],
+  "specs": [
+    { "label": "Dimensions", "value": "Ø 42 × H 61 cm" },
+    { "label": "Materials", "value": "Glazed ceramic, silk, brass" },
+    { "label": "Lead time", "value": "6–8 weeks" }
+  ],
+  "options": [
+    {
+      "name": "Shade",
+      "values": [
+        { "label": "Pearl silk", "swatch": "muted" },
+        { "label": "Ocean silk", "swatch": "secondary" },
+        { "label": "Warm felt", "swatch": "accent" }
+      ]
+    },
+    {
+      "name": "Piping",
+      "values": [
+        { "label": "Cognac", "swatch": "accent" },
+        { "label": "Ink", "swatch": "secondary" },
+        { "label": "Natural", "swatch": "muted" }
+      ]
+    },
+    {
+      "name": "Base",
+      "values": [
+        { "label": "Sea glaze", "swatch": "secondary" },
+        { "label": "Chalk", "swatch": "muted" },
+        { "label": "Charcoal", "swatch": "accent" }
+      ]
+    }
+  ],
+  "accordions": [
+    {
+      "title": "Craftsmanship",
+      "body": "Each base is thrown and glazed by hand, then fired twice. The silk shade is hand-stitched and finished with a leather bies."
+    },
+    {
+      "title": "Origin & materials",
+      "body": "Made in small editions from Dutch clay, silk, vegetable-tanned leather and solid brass fittings."
+    }
+  ]
+}

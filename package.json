@@ -16,6 +16,8 @@
     "audit:waivers": "pnpm audit --json | node scripts/audit-waiver-filter.mjs",
     "scan:workflows": "node scripts/ci-workflow-guard.mjs",
     "scan:prod-purity": "node scripts/prod-purity-scan.mjs",
+    "fixtures:sync": "node scripts/sync-yve-fixtures.mjs",
+    "fixtures:check": "node scripts/sync-yve-fixtures.mjs --check",
     "changeset": "changeset"
   },
   "devDependencies": {

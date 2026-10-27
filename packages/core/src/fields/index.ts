@@ -1,18 +1,81 @@
 /**
- * Field-type registry vocabulary — the pure half of the dual-registry design
- * (ADR-0009 §1, master-plan §4.2). P0: names only; `defineFieldType` and the
- * parse/serialize/validate contracts land in P1.1/P1.2 (ADR-0003).
+ * Field registry vocabulary + zod-first factories (ADR-0003 / ADR-0009).
+ * 12 value types, `divider` decoration, virtual `slug`.
  */
-export type FieldTypeName =
-  | "string"
-  | "text"
-  | "number"
-  | "boolean"
-  | "select"
-  | "datetime"
-  | "list"
-  | "object"
-  | "image"
-  | "relation"
-  | "hidden"
-  | "slug"
+export { divider } from "./divider"
+export type {
+  BaseFieldOptions,
+  BooleanFieldOptions,
+  DatetimeFieldOptions,
+  HiddenFieldOptions,
+  ImageFieldOptions,
+  ListFieldOptions,
+  NumberFieldOptions,
+  ObjectFieldOptions,
+  RelationFieldOptions,
+  SelectFieldOptions,
+  SlugFieldOptions,
+  StringFieldOptions,
+  TextFieldOptions,
+} from "./factories"
+export {
+  boolean,
+  datetime,
+  defineField,
+  hidden,
+  image,
+  list,
+  number,
+  object,
+  relation,
+  select,
+  slug,
+  string,
+  text,
+} from "./factories"
+export { CMS_META_KEY, getFieldMeta, setFieldMeta, unwrapFieldSchema } from "./meta"
+export type { ParsedEntry, ParseEntryOptions, ParseIssue, ParseIssueCode } from "./parse"
+export { parseEntry } from "./parse"
+export type {
+  BaseFieldDescriptor,
+  BaseFieldMeta,
+  BooleanFieldDescriptor,
+  BooleanFieldMeta,
+  DatetimeFieldDescriptor,
+  DatetimeFieldMeta,
+  DividerDeclaration,
+  DividerFieldDescriptor,
+  FieldDescriptor,
+  FieldMeta,
+  FieldTypeName,
+  FieldWidth,
+  HiddenFieldDescriptor,
+  HiddenFieldMeta,
+  ImageFieldDescriptor,
+  ImageFieldMeta,
+  ListFieldDescriptor,
+  ListFieldMeta,
+  NamedFieldSchema,
+  NumberFieldDescriptor,
+  NumberFieldMeta,
+  ObjectFieldDescriptor,
+  ObjectFieldMeta,
+  RelationFieldDescriptor,
+  RelationFieldMeta,
+  SelectFieldDescriptor,
+  SelectFieldMeta,
+  SelectOption,
+  SlugFieldDescriptor,
+  SlugFieldMeta,
+  StringFieldDescriptor,
+  StringFieldMeta,
+  StringFormat,
+  TextFieldDescriptor,
+  TextFieldMeta,
+} from "./types"
+export type {
+  EntryValidationOptions,
+  EntryValidationResult,
+  RelationServices,
+} from "./validate"
+export { mergeUntouched, validateEntryForSave } from "./validate"

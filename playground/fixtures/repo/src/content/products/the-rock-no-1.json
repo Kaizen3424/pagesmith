@@ -1,0 +1,69 @@
+{
+  "title": "The Rock No. 1",
+  "kicker": "The Rock collection · No. 1",
+  "displayName": "The Rock",
+  "material": "Stoneware · Wool felt",
+  "price": 1295,
+  "pricePrefix": "",
+  "category": "Table Lamps",
+  "materialFilter": "Ceramics",
+  "description": "An elemental stoneware base paired with a softly pleated wool-felt shade. Quietly monumental, each base is shaped and fired by hand.",
+  "images": [
+    {
+      "image": "/images/products/the-rock-no-1-1.jpg",
+      "alt": "The Rock No. 1 sculptural lamp",
+      "objectPosition": "left center"
+    },
+    {
+      "image": "/images/products/the-rock-no-1-2.jpg",
+      "alt": "Close-up of hand-stitched leather trim",
+      "objectPosition": "center"
+    },
+    {
+      "image": "/images/products/the-rock-no-1-3.jpg",
+      "alt": "The Rock in the ING & YVE collection",
+      "objectPosition": "center"
+    }
+  ],
+  "specs": [
+    { "label": "Dimensions", "value": "Ø 54 × H 68 cm" },
+    { "label": "Materials", "value": "Stoneware, felt, leather" },
+    { "label": "Lead time", "value": "6–8 weeks" }
+  ],
+  "options": [
+    {
+      "name": "Shade",
+      "values": [
+        { "label": "Warm felt", "swatch": "accent" },
+        { "label": "Pearl linen", "swatch": "muted" },
+        { "label": "Moss wool", "swatch": "accent" }
+      ]
+    },
+    {
+      "name": "Piping",
+      "values": [
+        { "label": "Cognac", "swatch": "accent" },
+        { "label": "Ink", "swatch": "secondary" },
+        { "label": "Natural", "swatch": "muted" }
+      ]
+    },
+    {
+      "name": "Base",
+      "values": [
+        { "label": "Charcoal", "swatch": "accent" },
+        { "label": "Chalk", "swatch": "muted" },
+        { "label": "Ocean", "swatch": "secondary" }
+      ]
+    }
+  ],
+  "accordions": [
+    {
+      "title": "Craftsmanship",
+      "body": "The ceramic body is built and finished by hand. Its felt shade is edged with our signature double-stitched leather bies."
+    },
+    {
+      "title": "Origin & materials",
+      "body": "Made in small editions from 99% Dutch-sourced clay, wool felt, leather and fittings."
+    }
+  ]
+}
