@@ -1,6 +1,6 @@
 # Phase P1 — Config schema + read path
 
-> Status: 🟨 Gate ready 2026-10-27 — owner confirmation pending · Prev gate: P0 ✅ · NEW chat required
+> Status: ✅ Gate passed 2026-10-27 (owner-confirmed in chat) · Next phase: P2 (`docs/specs/phases/P2-save-pipeline.md`, NEW chat)
 
 ## Pre-flight checklist
 - [x] P0 gate confirmed ✅ in chats/AGENTS.md status board (owner-confirmed 2026-10-27)
@@ -42,8 +42,9 @@ The admin can **log in with a PAT and browse a real-shaped repo offline** (fixtu
 - [x] e2e: login → browse all 14 yve-fixture entries offline → open 3 entries incl. one drift file renders w/ banner — green (e2e exceeds target: opens product + collection + ALL 6 drift files, each asserting its banner; 1 passed in 17.7s)
 - [x] `INV-S01..S06`, `INV-P14`, `INV-A03(partial)`, INV-T01/02/03 core tests green; read-side contract suite green vs BOTH backends (core 174 + playground 17 tests, incl. contracts vs FakeGithub AND reference-fixture-backend; typecheck/check/build all green)
 - [x] **INV-S02 P1 scope:** serializer identity + CRLF canon + empty tree-diff green; zero-diff commit assertion is owned by P2 C.1 (owner-approved split 2026-10-27)
-- [ ] Agent-side docs updated 2026-10-27 (todo/phase log/AGENTS/invariants); owner review + renewal in chat completes this row.
+- [x] Agent-side docs updated 2026-10-27 (todo/phase log/AGENTS/invariants); OWNER CONFIRMED the full gate in chat 2026-10-27
 
 ## Session log
+- 2026-10-27 — P1 GATE PASSED: owner confirmed in chat; committed `b0b921b`; next phase P2 in a new chat (session)
 - 2026-10-27 — P1 COMPLETE: read path + browse journey built and green (e2e: login → 14 yve entries → product + collection + all 6 drift banners, origin-clean; core 174 + playground 17 tests; typecheck/check/build/supply-chain scans green); gate-ready status staged; OWNER CONFIRMATION PENDING (session)
 - 2026-10-27 — P1 pre-flight complete; owner approved zod+idb-keyval / fetch transport, 14+6 fixtures, source-preserving serializer, S02 split `(session)`

@@ -17,7 +17,7 @@
 - [x] P0.12 AGENTS.md §6 + spec commands finalized — §6 table and 01-spec §3 materialized with exact flags; README status banner + runnable quickstart updated
 - [x] ⛔ GATE P0: clean-clone install/typecheck/lint/test/build/e2e all green; demo walk-through; owner confirms — clean-clone chain VERIFIED GREEN 2026-10-27 (fresh clone at bf9f50e: install --frozen-lockfile, -r typecheck, check, -r test, -r build, scan:prod-purity, e2e); demo: admin preview login shell served live; OWNER CONFIRMED in chat 2026-10-27
 
-## P1 — Config schema + read path (status: 🟨 gate ready 2026-10-27 — owner confirmation pending)
+## P1 — Config schema + read path (status: ✅ gate passed 2026-10-27 — owner-confirmed in chat)
 - [x] P1.1 DSL factories + closed config schema — 12 value types + divider + virtual slug; strict `toAdminConfig()`/`parseAdminConfig()`; config suite green (174 core tests total)
 - [x] P1.2 field registry + lenient parse + default-immunity — `parseEntry` {value,issues,untouched} + `validateEntryForSave`; INV-S03/S04 green
 - [x] P1.3 canonical serializer + golden byte-identity (fixture mirror) — all 14 yve content files SHA-256 byte-identical, CRLF canon, canonical printer; INV-S01/S02-P1 green
@@ -32,7 +32,7 @@
 - [x] P1.12 yve fixture mirror + 6 drift fixtures — 44-file mirror pinned @ e922bbb (`fixtures:check`); all 6 drift files render their banner in e2e
 - [x] P1.13 collator + money helper + slug-read prototype — shared collator, nl-NL money, slug-virtual; tests green
 - [x] P1.14 FakeGithub read handlers + chaos modes — ETag/304, contents/blob, truncation/404/429 chaos; playground contracts green
-- [ ] ⛔ GATE P1: browse-journey e2e + INV-S01..S06 + P14 + A03(partial) + T01/02/03 green — evidence green 2026-10-27 (e2e 1 passed; every test of the listed invariants passing; contract suite green vs both backends); AWAITING OWNER CONFIRMATION in chat
+- [x] ⛔ GATE P1: browse-journey e2e + INV-S01..S06 + P14 + A03(partial) + T01/02/03 green — OWNER CONFIRMED in chat 2026-10-27; evidence green same day (e2e 1 passed; every listed invariant green; contract suite green vs both backends); pushed as `b0b921b`
 
 ## P2 — Save pipeline + editor v0 (status: ⬜)
 - [ ] C.1 P2.1 commitChanges full path · P2.2 GitError taxonomy/classifier · P2.3 retry+throttle policy
