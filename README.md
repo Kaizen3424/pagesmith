@@ -2,7 +2,7 @@
 
 > A git-backed, zero-database CMS: a framework-agnostic TypeScript core + a fully brandable React admin. Content stays as plain JSON files in your GitHub repository; the admin talks to `api.github.com` directly — **your token never leaves the browser, and there is no server to run.**
 
-<p align="center"><strong>STATUS: P0 scaffold (in progress)</strong> — monorepo skeleton, CI, and the law-encoding seams are in and green locally (incl. clean-clone install); feature phases start after the P0 gate. See <code>AGENTS.md</code>.</p>
+<p align="center"><strong>STATUS: P0 complete (gate passed 2026-10-27)</strong> — monorepo skeleton, CI, and law-encoding seams are in and green locally (incl. clean-clone install); P1 (config schema + read path) is next. See <code>AGENTS.md</code>.</p>
 
 ## Why
 
@@ -50,4 +50,4 @@ At P0, `packages/admin` is the React 19 shell (design tokens + login route) and 
 
 ## License
 
-MIT (draft) — see `LICENSE` (owner name finalizes at P0).
+MIT — see `LICENSE`.

@@ -2,7 +2,7 @@
 
 > **Every agent session starts here.** Read this file fully, then follow §4 Session Protocol. This file never duplicates details it can point to; it is the single tracker for project state. Agents MUST maintain §3 and the task checklists — stale docs are treated as build failures.
 
-Maintained by: agent sessions · Last updated: 2026-10-27 (P0 scaffold)
+Maintained by: agent sessions · Last updated: 2026-10-27 (P0 gate PASSED — owner-confirmed; focus P1)
 
 ---
 
@@ -18,7 +18,7 @@ Maintained by: agent sessions · Last updated: 2026-10-27 (P0 scaffold)
 
 | Phase | Name | Status | Exit gate (full list in phase file) |
 |---|---|---|---|
-| P0 | Scaffold & laws | 🟨 In progress — all 12 slices committed, local + clean-clone gates green; ⛔ GATE P0 demo/confirmation pending owner (LICENSE line + repo push deferred by owner) | CI-verifiable scaffold green; ADRs 0001–0010 signed; specs runnable |
+| P0 | Scaffold & laws | ✅ Gate passed 2026-10-27 | CI-verifiable scaffold green; ADRs 0001–0010 signed; specs runnable |
 | P1 | Config schema + read path | ⬜ Not started | yve fixture library browses offline; lenient parse contract green |
 | P2 | Save pipeline + editor v0 | ⬜ Not started | e2e publish loop green incl. conflict + failure paths |
 | P3 | Widget system complete | ⬜ Not started | yve exact config editable on fixtures, zero code change |
@@ -27,7 +27,7 @@ Maintained by: agent sessions · Last updated: 2026-10-27 (P0 scaffold)
 | P6 | yve integration cutover | ⬜ Blocked until P5 | success criteria on the real site; rollback path proven |
 | P7 | OSS publication | ⬜ Blocked until P6 | stranger completes widget exemplar unaided; release dry-run |
 
-**Current focus:** P0 — ⛔ GATE P0 (owner demo + confirmation in chat; the clean-clone gate is green). P1 starts only in a NEW chat after the owner ticks the gate. Owner inputs still owed: LICENSE owner line + GitHub repo owner/name for the scheduled push.
+**Current focus:** P1 — Config schema + read path (`docs/specs/phases/P1-config-read.md`). P0 gate PASSED 2026-10-27 (owner-confirmed in chat). Start P1 in a NEW chat (one phase per chat). P0 remote as chosen by owner: `https://github.com/Kaizen3424/pagesmith.git` (final naming sweep stays P7.1 — working name MyCMS until then).
 
 *Legend: ⬜ not started · 🟨 in progress · ✅ gate passed (date) · ⛔ blocked*
 

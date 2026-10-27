@@ -2,7 +2,7 @@
 
 > Work top-down within the phase marked **Current focus** in `AGENTS.md §2`. One phase per chat. Gate lines (`⛔ GATE`) require owner confirmation in chat; do not proceed past them until ticked by both.
 
-## P0 — Scaffold & laws (status: 🟨 in progress — awaiting ⛔ GATE demo + owner confirmation)
+## P0 — Scaffold & laws (status: ✅ gate passed 2026-10-27 — owner-confirmed in chat)
 - [x] P0.1 git init + conventions — trunk-based law in CONTRIBUTING.md; LF law via .gitattributes; git meta committed (chore(repo) 5718a34)
 - [x] P0.2 pnpm workspace + catalog (frozen install green) — pnpm 10.34.9 pinned via packageManager, exact catalog pins, engines ≥22.12 + engine-strict; frozen install green (chore(supply-chain) 0bbebf3)
 - [x] P0.3 build/security allowlist + audit-waivers schema — onlyBuiltDependencies committed = esbuild/lightningcss/@tailwindcss/oxide each with reason (install runs with zero blocked-script warnings; playwright/shiki deliberately absent); security/audit-waivers.yml schema + `pnpm run audit:waivers` green (0bbebf3)
@@ -12,10 +12,10 @@
 - [x] P0.7 e2e skeleton (chromium-only, smoke, origin allowlist) — chromium installed explicitly (never a postinstall); smoke + INV-N05 catch-all origin-allowlist assertion green (test(e2e) f3df318)
 - [x] P0.8 CI pipeline committed (+ push when done) — ci.yml: frozen install → typecheck → biome → vitest (coverage gate) → build → prod-purity scan → e2e; SHA-pinned actions, job-level contents: read, zero pull_request_target (self-enforced by scripts/ci-workflow-guard.mjs); scheduled waiver-filtered audit job (ci: 6b8024c). NOTE: CI run itself validates on first push — owner schedules it
 - [x] P0.9 changesets wired — `pnpm changeset status` runs green; privatePackages version-only (never published/tagged — publish is the deliberate P7 flag-flip; plan.md wording fixed under ADR-0010) (build(release) bf9f50e)
-- [ ] P0.10 LICENSE owner line (ASK OWNER) — DEFERRED by owner decision 2026-10-27 ("decide later"); placeholder stays; this keeps ⛔ GATE open
+- [x] P0.10 LICENSE owner line (ASK OWNER) — finalized 2026-10-27: owner "Use Kaizen" → `Copyright (c) 2026 Kaizen and MyCMS contributors` (LICENSE + README license line)
 - [x] P0.11 ADR 0001–0010 verification pass — "P0 verification" sections appended to all ten ADRs, no deviations; ADR-0010 carries the dated Node-pin addendum (+ tsup dts:false note for TS 7; actionlint/zizmor deferred to OSS with internal guard covering the enforceable subset)
 - [x] P0.12 AGENTS.md §6 + spec commands finalized — §6 table and 01-spec §3 materialized with exact flags; README status banner + runnable quickstart updated
-- [ ] ⛔ GATE P0: clean-clone install/typecheck/lint/test/build/e2e all green; demo walk-through; owner confirms — clean-clone chain VERIFIED GREEN 2026-10-27 (install --frozen-lockfile, pnpm -r typecheck, check, -r test, -r build, scan:prod-purity, e2e all passed in a fresh clone at bf9f50e); demo + owner confirmation pending
+- [x] ⛔ GATE P0: clean-clone install/typecheck/lint/test/build/e2e all green; demo walk-through; owner confirms — clean-clone chain VERIFIED GREEN 2026-10-27 (fresh clone at bf9f50e: install --frozen-lockfile, -r typecheck, check, -r test, -r build, scan:prod-purity, e2e); demo: admin preview login shell served live; OWNER CONFIRMED in chat 2026-10-27
 
 ## P1 — Config schema + read path (status: ⬜)
 - [ ] P1.1 DSL factories + closed config schema

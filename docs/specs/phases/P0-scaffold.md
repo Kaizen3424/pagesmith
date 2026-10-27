@@ -1,6 +1,6 @@
 # Phase P0 — Scaffold & laws
 
-> Status: 🟨 scaffold built — awaiting ⛔ GATE P0 (demo + owner confirmation in chat) · Prev: none · P1 starts in a NEW chat only after the gate passes
+> Status: ✅ gate passed 2026-10-27 (owner confirmation in chat) · Prev: none · NEXT: P1 (`docs/specs/phases/P1-config-read.md`) — owner starts it in a NEW chat
 
 ## Pre-flight checklist
 - [x] `AGENTS.md` read (status board = P0, never start another phase)
@@ -44,9 +44,10 @@ A CI-verifiable monorepo skeleton with every law already encoded (boundaries, ta
 ## Exit gate (all must be ✅ + owner confirmation IN CHAT)
 - [x] `pnpm install --frozen-lockfile` passes from a clean clone state; `pnpm -r typecheck && pnpm biome check && pnpm -r test` all green — VERIFIED in a fresh clone at bf9f50e (2026-10-27)
 - [x] `pnpm -r build` + e2e smoke green locally; CI file committed (validated on first push — schedule the push when you finish) — build + e2e green locally AND in the clean clone; push scheduled by owner, CI run validates remotely
-- [ ] Changeset file + audit-waivers schema present; LICENSE finalized — changesets ✅ + waiver schema ✅; LICENSE line DEFERRED (owner decision 2026-10-27)
+- [x] Changeset file + audit-waivers schema present; LICENSE finalized — changesets ✅ + waiver schema ✅; LICENSE line finalized 2026-10-27 ("Kaizen" — Copyright (c) 2026 Kaizen and MyCMS contributors)
 - [x] ADR 0001–0010 signed-off notes recorded (no deviation OR deviation discussed + spec updated) — ten P0-verification notes, no deviations; two toolchain notes recorded on ADR-0010
-- [ ] `tasks/todo.md` P0 section fully ticked; AGENTS.md status row P0 → ✅; focus → P1; phase log appended — STAGED: all completable items ticked; status row stays 🟨 and the gate stays open until the owner confirms (agents never self-approve a gate)
+- [x] `tasks/todo.md` P0 section fully ticked; AGENTS.md status row P0 → ✅; focus → P1; phase log appended — done 2026-10-27; gate confirmation received from the owner in chat
 
 ## Session log
+- 2026-10-27 — ⛔ GATE P0 PASSED: owner confirmed in chat after the live demo; P0.10 closed (LICENSE line: "Kaizen"); all P0 gate items ticked; remote chosen by owner = `https://github.com/Kaizen3424/pagesmith.git` (final naming sweep stays P7.1 — working name MyCMS until then); status board P0 → ✅, focus → P1 (session)
 - 2026-10-27 — P0 executed across the approved 12-slice order: P0.1–P0.9 + P0.11–P0.12 committed (P0.10 LICENSE deferred by owner); local gate AND fresh-clone gate green (install frozen / typecheck / biome / vitest+coverage / build / prod-purity / e2e); toolchain: pnpm 10.34.9, TS 7.0.2 (tsup dts:false noted on ADR-0010), Vite 8, Vitest 5, Biome 2.6; stop at ⛔ GATE P0 — owner demo + confirmation next, LICENSE line + repo push owed (session)
