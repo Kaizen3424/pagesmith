@@ -1,0 +1,22 @@
+# Line-ending law: canonical files are LF only (serializer byte-identity, INV-S01).
+* text=auto eol=lf
+
+# explicit LF for all text tooling files
+*.json text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# media fixtures stay binary (P4 faster runs: md5/mtimes unreliable? — plain binary)
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*svg binary

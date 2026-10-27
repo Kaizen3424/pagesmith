@@ -1,0 +1,36 @@
+# MyCMS · @mycms/packages · ESM-only
+
+node_modules/
+*/node_modules/*
+!*/node_modules/.pnpm-workspace-state.json
+
+# build output
+dist/
+dist-types/
+
+# typecheck artifacts
+*.tsbuildinfo
+
+# test/coverage tooling
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# vite/dev caches
+.vite/
+
+# environment (tokens NEVER enter the repo — 01-spec §6)
+.env
+.env.*
+!.env.example
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# pnpm temp
+.pnpm-store/
+
+# agent scratch (never committed)
+ABANDONED_FILES/

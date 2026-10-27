@@ -1,0 +1,45 @@
+# Phase P5 — Founder polish & IA
+
+> Status: ⬜ · Prev gate: P4 ✅ · NEW chat required
+
+## Pre-flight checklist
+- [ ] P4 gate ✅; ADRs: 0008 (status honesty), 0002 (bootstrap/restore UX), master-plan §7 (UX law FULL read); founder-cry triad briefs (master-plan §7)
+- [ ] `tasks/todo.md` § P5 loaded
+
+## Goal
+Everything non-structural that makes the founder safe-unaided: global IA surfaces (search/journal/heartbeat/recently-deleted), first-run consent + tour, drift chip, conflict freeze UX completion, copy-law audit, a11y + zoom/keyboard hardening, diagnostics. Ship-blocking rule: **nothing in v1 leaks jargon or raw ids.**
+
+## Deliverables
+- IA: global ⌘K search (titles/numbers/material/alt/descriptions across IDB cache, grouped by collection; zero-results teaching) · "My changes" journal v1 (client commit log filtered by author + partner section; entry/sha/time/"See on site") · persistent top-bar heartbeat (site ✓ live · last edit date) · login heartbeat (known-good state)
+- First-run: consent pact card (3 sentences, gallery typography, until first publish) · 60-second read-only tour of one real product
+- Drift monitor: If-None-Match HEAD poll while-visible/60s, reserved 24px line (no layout jump), 3 visual states + slide-over "what changed" field list / Keep-looking / Reload / "changes will meet your typing when you press Save — we'll guide you" (wording rules: names never "someone", no red until data risk, never sound/popup mid-typing)
+- Conflict freeze completion: classify→announce auto-merge list ("Kept [partner]'s caption · Kept your description"); per-field choice rows ("saved by [Milan], 3:05 PM" vs "yours"); 30-day archived discarded version w/ visible copy; attribution from commit author w/ `support.name` fallback
+- Copy law audit: ALL chrome strings via `t()` + token interpolation; founder ban-list scan (build/commit/deploy/token/slug→web address/repository/draft) — automated ensure-green; zod codes fully mapped (message map completed)
+- Journal/diagnostics: ring buffer + "copy diagnostics" (masked preview + user-initiated only); token expiry kit from ADR-0002 (handover card incl. expiry chosen by owner; expiring-chip "renew after Tue 2 Feb"; three landing screens w/ distinct copy: library bar / editor re-auth sheet / login card w/ prewritten partner note)
+- A11y/form-factor sweep: gold-as-accent token audit (≥4.5:1 body, gold ≥18px/semibold/2px ring), focus traps + Escape returns, ↑/↓ reorder + aria-live everywhere, 1280-effective-px + rem tests, keyboard-only e2e journey, `scroll-padding-bottom` under sticky bar
+- Tests: founder-cry triad e2e simulations (reported in phase file as script list); a11y axe scans in e2e; copy-rule scanner unit test; INV-A01 full journey re-run in persisted-token mode
+
+## Tasks (plan.md P5.1–P5.10)
+- [ ] 1. Global search + zero-state teaching
+- [ ] 2. Journal v1 + login heartbeat + top-bar heartbeat
+- [ ] 3. Consent pact + tour flow (dismissible-until-first-publish)
+- [ ] 4. Drift chip + slide-over (INV-fresh re-use; monitor only when visible)
+- [ ] 5. Conflict freeze field-granularity UI completion (round-2 §3 spec)
+- [ ] 6. t() extraction + copy ban-list scanner + message-map completion
+- [ ] 7. Token expiry kit (three screens + handover card + recorded expiry chip)
+- [ ] 8. A11y pass 1: tokens/contrast audit + reorder aria-live + focus management
+- [ ] 9. A11y/e2e pass 2: keyboard-only journey + 125% zoom layout + axe scans
+- [ ] 10. Diagnostics ring buffer + copy-diagnostics + masking tests re-run (INV-A05)
+
+## Gotchas
+- Journal is NOT a merge/history browser — v1 = list + links only; field-delta lines are explicitly v2 (scope guard).
+- Search reads the IDB/Query cache — it must degrade honestly offline ("last seen copy").
+- No new backend calls in this phase without a probe/capability guard.
+
+## Exit gate
+- [ ] Founder-cry triad simulations scripted + green (each links the prevention findings)
+- [ ] Copy scanner + a11y suite + keyboard journey green; INV-A01 persisted-mode re-run green
+- [ ] Owner demo of: consent → tour → edit → conflict → failure → recover loop; AGENTS/todos/logs updated
+
+## Session log
+- (none yet)

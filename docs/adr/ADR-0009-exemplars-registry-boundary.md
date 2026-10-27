@@ -1,0 +1,16 @@
+# ADR-0009 — Reference exemplars + registry/validator boundary (how strangers extend MyCMS)
+
+**Status:** Accepted · 2026-10-27
+
+## Context
+Round-1 major: the Day-1 custom-widget author — the Sveltia gap this project exists to fix — would hit an underspecified contract; round-2 added that relation display needs cross-entry reads yet widgets must never touch the transport. OSS readiness requires copyable exemplars with objective acceptance.
+
+## Decision
+1. **Two registries, clean seam** (master-plan §4.2): core `defineFieldType({parse, serialize, validate, default, meta})` (pure, no React/IO) ↔ admin `defineWidget(fieldTypeName, Component)` joined **by name**. Custom contract = `WidgetProps{ value, onChange, error, fieldConfig, useField(), services{ entryIndex(coll), readEntry(ref), siblingValues() } }` — **`backend`/token access in WidgetProps is a standing veto** (kills DI, testing, blast radius in one stroke).
+2. **Async/related-data**: relation display/search resolution owned by admin `ServicesProvider` built at the composition root; sync from the Query cache keyed by `refSha` w/ async fallback; core defines relation as pure data `{target, valueField, display, search}`. THIS is the async-context-validation slot genesis §2 anticipated.
+3. **Exemplar 1 — custom widget**: `packages/admin/src/widgets/reference-swatch/` — enum-color-dot widget mirroring incumbent `swatch: accent|muted|secondary`. Acceptance: registers in the widget registry · renders in playground fixtures · passes the XSS golden suite · registry snapshot test updated · docblock walks the contract (config → validate → serialize → render).
+4. **Exemplar 2 — backend**: `packages/core/src/backends/reference-fixture-backend/` — zero-network `GitBackend` over fixture trees. Acceptance: passes the SAME shared contract suite as GithubBackend (ADR-0001) — the suite is the acceptance and the first-contributor magnet.
+5. **Widget integration UX is config-only**: host apps register their own widgets via the admin bundle (peer versions aligned to a pinned internal matrix — declaration-merging keeps types honest); registry snapshot test prevents silent contract drift.
+
+## Consequences
+Exemplar acceptance criteria are P3 (widget) and P1 (backend) gate items — not polish; the contract suite version bumps = breaking-change discipline via changesets.
