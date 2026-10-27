@@ -1,11 +1,11 @@
 # Phase P2 — Save pipeline + editor v0
 
-> Status: ⬜ · Prev gate: P1 ✅ · NEW chat required — **highest-risk phase; checkpoints inside**
+> Status: 🟨 · Prev gate: P1 ✅ · Checkpoint **C.1 built — ⛔ mini-gate pending owner confirmation**
 
 ## Pre-flight checklist
-- [ ] P1 gate ✅; `01-spec.md` §5 state law read; ADRs to load now: **0004 (rebase + state machine + lease) — THE phase ADR**, **0005 (transactional backend)**, **0008 (status truth)**, plus 0002 (token lifecycle edges)
-- [ ] `invariants.md` INV-P*/A01/A02/N01/D01–03 fully internalized
-- [ ] Checkpoint plan: implement in C.1 → C.2 → C.3 slices, each with its own mini-gate (below) — never bulk-build this phase in one session block
+- [x] P1 gate ✅; `01-spec.md` §5 state law read; ADRs to load now: **0004 (rebase + state machine + lease) — THE phase ADR**, **0005 (transactional backend)**, **0008 (status truth)**, plus 0002 (token lifecycle edges) (loaded 2026-10-27)
+- [x] `invariants.md` INV-P*/A01/A02/N01/D01–03 fully internalized (P01–P03/P09/P14+A02/N01/D02 subset exercised in C.1)
+- [x] Checkpoint plan: implement in C.1 → C.2 → C.3 slices, each with its own mini-gate (below) — never bulk-build this phase in one session block
 
 ## Goal
 The full **publish loop**: edit → validate → squash-commit → FF ref update → per-entry build status, with typed failure taxonomy and the conflict machinery — the riskiest code in the project, built behind property tests.
@@ -16,7 +16,7 @@ The full **publish loop**: edit → validate → squash-commit → FF ref update
 - Tests: INV-P01–P14 green; INV-A01/A02; INV-N01; INV-D01–03; contract suite extended (full commit side vs FakeGithub chaos modes); GithubBackend recorded-fixture capture script (sandbox repo) + first replay fixtures
 
 ## Checkpoint slices (mini-gates)
-- [ ] **C.1 backend commit** — transactional call path + INV-P01/02/03/09/14 green vs FakeGithub chaos hooks
+- [x] **C.1 backend commit** — transactional call path + INV-P01/02/03/09/14 green vs FakeGithub chaos hooks (built 2026-10-27, ⛔ — awaiting owner confirmation)
 - [ ] **C.2 invariant engine + rebase()** — INV-P05/06/07/08 + rebase property tests green; conflict decision matrix documented in ADR-0004 appendix
 - [ ] **C.3 state machine + UI loop** — INV-P04/10/11/12/13 + editor save bar + status service green; e2e full publish loop (incl. conflict + throttle-park) green
 
@@ -32,4 +32,4 @@ The full **publish loop**: edit → validate → squash-commit → FF ref update
 - [ ] Docs: ADR-0004/0005 "verified" notes updated; AGENTS.md status/logs updated
 
 ## Session log
-- (none yet)
+- 2026-10-27 — **C.1 built (⛔ pending owner confirmation).** ADR-0005 P2 addendum first (`commitChanges options.message`, driver protocol, BackendWriteError vocabulary, hook seam). Landmarks: `FakeGithubServer` truthful git-data model (chaos lives in the harness adapters only; `force:true` honored but logged for INV-P01); `git-sha.ts` WebCrypto SHA-1 framing; `GithubBackend.commitChanges` (≤5 blob pool → base_tree → canonical commit → `force:false` ref PATCH, classified failures, no body leaks); FixtureBackend in-memory CAS; `runSave` driver (skip-token refusal → fresh ref → zero-diff noop → commit → CAS-verdict → rebuild ≤2 → published w/ content-confirm). Contract suite extended with WRITE_COMMIT_CHECK + WRITE_CAS_CHECK, green vs both backends; playground MSW handlers now delegate all git-data endpoints to the core model (write endpoints added, ETag/truncation/auth chaos retained). INV green this session: P01, P02, P03, P09 (+P10 partial), P14, A02 (matrix; screens owed P2.10), A03 (hook seam; re-probe wires at P2.5), N01 (policy math; UI owed P2.5+), D02, S02 (C.1 scope). Core 240/240 · playground 17/17 · typecheck + biome clean. Focused-run note: vitest coverage thresholds fail on single-file runs — focused INV runs use `--coverage.enabled=false`. Open question carried: whether C.1's gate folds A02/N01/D02 evidence or stays strictly P01/02/03/09/14. (session)
